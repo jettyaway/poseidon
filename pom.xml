@@ -40,19 +40,6 @@
     </dependencies>
 
 
-    <distributionManagement>
-        <repository>
-            <id>17zuoye-nexus-releases</id>
-            <name>17zuoye Releases Repository</name>
-            <url>http://maven.17zuoye.net/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>17zuoye-nexus-snapshots</id>
-            <name>17zuoye Snapshots Repository</name>
-            <url>http://maven.17zuoye.net/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
