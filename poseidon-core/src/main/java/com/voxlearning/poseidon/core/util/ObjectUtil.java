@@ -1,7 +1,7 @@
 package com.voxlearning.poseidon.core.util;
 
 
-import com.sun.xml.internal.ws.util.UtilException;
+import com.voxlearning.poseidon.core.exceptions.UtilException;
 import com.voxlearning.poseidon.core.io.IOUtil;
 
 import java.io.*;
