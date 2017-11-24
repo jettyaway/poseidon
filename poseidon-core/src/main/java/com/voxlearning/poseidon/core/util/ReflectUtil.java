@@ -7,10 +7,9 @@ import com.voxlearning.poseidon.core.lang.SimpleCache;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -164,8 +163,85 @@ public class ReflectUtil {
 
     //------------------------------method------------------------------------------------------------------------------
 
+    /**
+     * 返回方法名称集合
+     *
+     * @param clazz 　类
+     * @return 方法名称集合
+     */
+    public static Set<String> getMethodNames(Class<?> clazz) {
+        if (Objects.isNull(clazz)) {
+            return null;
+        }
+        Method[] methods = getMethods(clazz);
+        return Stream.of(methods).map(Method::getName).collect(Collectors.toSet());
+    }
 
-    public static Method getMethods(Class<?> clazz, boolean ignoreCase, String methodName, Class<?>... paramTypes) {
+    /**
+     * 返回符合过滤器条件的方法名称集合
+     *
+     * @param clazz     　类
+     * @param predicate 过滤器
+     * @return 方法名称集合
+     */
+    public static Set<String> getMethodNames(Class<?> clazz, Predicate<Method> predicate) {
+        if (Objects.isNull(clazz)) {
+            return null;
+        }
+        Method[] methods = getMethods(clazz);
+        return Stream.of(methods).filter(predicate).
+                map(Method::getName).collect(Collectors.toSet());
+    }
+
+    /**
+     * 返回改对象的所有方法，包括非<code>Public</code>,从父对象而来的方法
+     *
+     * @param obj        　对象
+     * @param methodName 　方法名
+     * @param args       　方法参数
+     * @return
+     */
+    public static Method getMethodsOfObj(Object obj, String methodName, Object... args) {
+        if (Objects.isNull(obj)) {
+            return null;
+        }
+        return getMethod(obj.getClass(), methodName, ClassUtil.getClasses(args));
+    }
+
+    /**
+     * 忽略大小写返回指定的方法
+     *
+     * @param clazz      类
+     * @param methodName 　方法名称
+     * @param paramTypes 　方法参数类型　数组
+     * @return 方法
+     */
+    public static Method getMethodsIgnoreCase(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+        return getMethod(clazz, true, methodName, paramTypes);
+    }
+
+    /**
+     * 返回指定的方法,不忽略大小写
+     *
+     * @param clazz      类
+     * @param methodName 　方法名称
+     * @param paramTypes 　方法参数类型　数组
+     * @return 方法
+     */
+    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+        return getMethod(clazz, false, methodName, paramTypes);
+    }
+
+    /**
+     * 获取指定的方法 如果不存在返回<code>null</code>
+     *
+     * @param clazz      类 如果为{@code null} 返回{@code null}
+     * @param ignoreCase 是否忽略大小写
+     * @param methodName 　方法名称
+     * @param paramTypes 　方法的参数类型
+     * @return 符合条件的Method
+     */
+    public static Method getMethod(Class<?> clazz, boolean ignoreCase, String methodName, Class<?>... paramTypes) {
         Preconditions.checkNotNull(clazz);
         Preconditions.notBlank(methodName);
         Method[] methods = getMethods(clazz);
@@ -242,10 +318,187 @@ public class ReflectUtil {
         return allMethods;
     }
 
+    /**
+     * 判断一个方法是否为equals方法
+     *
+     * @param method
+     * @return true or false
+     */
+    public static boolean isEqualsMethod(Method method) {
+        if (Objects.isNull(method) || !"equals".equals(method.getName())) {
+            return false;
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        return parameterTypes.length == 1 && parameterTypes[0] == Object.class;
+    }
+
+    /**
+     * 判断一个方法是否为hashCode方法
+     *
+     * @param method 方法
+     * @return true or false
+     */
+    public static boolean isHashCodeMethod(Method method) {
+        if (Objects.isNull(method) || !"hashCode".equals(method.getName())) {
+            return false;
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        return Objects.isNull(parameterTypes) || parameterTypes.length == 0;
+    }
+
+    /**
+     * 判断一个方法是否为toString方法
+     *
+     * @param method
+     * @return
+     */
+    public static boolean isToStringMethod(Method method) {
+        if (Objects.isNull(method) || !"toString".equals(method)) {
+            return false;
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        return Objects.isNull(parameterTypes) || parameterTypes.length == 0;
+    }
+
+    //-----------------------------instance-----------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstance(String clazz) {
+        try {
+            return (T) Class.forName(clazz).newInstance();
+        } catch (Exception e) {
+            throw new UtilException(e, "Instance class %s error!", clazz);
+        }
+    }
+
+    /**
+     * @param clazz  类
+     * @param params 　构造函数参数
+     * @param <T>    　泛型类型
+     * @return 实例
+     */
+    public static <T> T newInstance(Class<T> clazz, Object... params) {
+        if (ArrayUtil.isEmpty(params)) {
+            try {
+                return clazz.newInstance();
+            } catch (Exception e) {
+                throw new UtilException(e, "Instance class %s error!", clazz);
+            }
+        }
+        Constructor<T> constructor = getConstructor(clazz, ClassUtil.getClasses(params));
+        if (constructor == null) {
+            throw new UtilException("class [%s] have no this params [%s] type constructor", clazz.getName(), ArrayUtil.arrayToString(params));
+        }
+        try {
+            return constructor.newInstance(params);
+        } catch (Exception e) {
+            throw new UtilException(e, "invoke class [%s] constructor failed.", clazz.getName());
+        }
+    }
+
+    /**
+     * 遍历改类的所有构造函数　创建对象
+     *
+     * @param clazz 类
+     * @param <T>   　泛型类型
+     * @return 对象实例
+     */
+    public static <T> T newInstanceIfPossible(Class<T> clazz) {
+        if (Objects.isNull(clazz)) {
+            return null;
+        }
+        Constructor<T>[] constructors = getConstructor(clazz);
+        Class<?>[] parameterTypes;
+        for (Constructor<T> constructor : constructors) {
+            parameterTypes = constructor.getParameterTypes();
+            if (Objects.isNull(parameterTypes) || parameterTypes.length == 0) {
+                try {
+                    return clazz.newInstance();
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+            try {
+                return constructor.newInstance(ClassUtil.getDefaultValue(parameterTypes));
+            } catch (Exception e) {
+            }
+        }
+        return null;
+    }
+
+    //---------------------------------------invoke---------------------------------------------------------------------
+
+    /**
+     * 执行静态方法方法
+     *
+     * @param method 方法对象
+     * @param args   　参数
+     * @param <T>    　类型
+     * @return 执行结果
+     */
+    public static <T> T invokeStatic(Method method, Object... args) {
+        return invoke(null, method, args);
+    }
+
+    /**
+     * 执行静态方法方法
+     *
+     * @param clazz      类型
+     * @param methodName 执行方法名称
+     * @param args       　参数
+     * @param <T>        　类型
+     * @return 结果
+     */
+    public static <T> T invokeStatic(Class<?> clazz, String methodName, Object... args) {
+        Method methodsOfObj = getMethod(clazz, methodName, ClassUtil.getClasses(args));
+        if (Objects.isNull(methodsOfObj)) {
+            throw new UtilException("No such static method %s", methodName);
+        }
+        return invoke(null, methodsOfObj, args);
+    }
+
+
+    /**
+     * 执行对象的某个方法
+     *
+     * @param obj        对象
+     * @param methodName 　执行方法名称
+     * @param args       　参数
+     * @param <T>        　类型
+     * @return result
+     */
+    public static <T> T invoke(Object obj, String methodName, Object... args) {
+        Method md = getMethodsOfObj(obj, methodName, args);
+        if (Objects.isNull(md)) {
+            throw new UtilException("No such method %s", methodName);
+        }
+        return invoke(obj, methodName, args);
+    }
+
+    /**
+     * @param obj    对象
+     * @param method 　方法
+     * @param args   　参数
+     * @param <T>    　对象类型
+     * @return 结果
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T invoke(Object obj, Method method, Object... args) {
+        if (Objects.isNull(method)) {
+            return null;
+        }
+        if (!method.isAccessible()) {
+            method.setAccessible(true);
+        }
+        try {
+            return (T) method.invoke(ClassUtil.isStatic(method) ? null : obj, args);
+        } catch (Exception e) {
+            throw new UtilException(e, "obj[%s] method:[%s] args[%s] invoke failed", obj.getClass().toString(),
+                    method.getName(), ArrayUtil.arrayToString(args));
+        }
+    }
 
     public static void main(String[] args) {
         System.out.println(ReflectUtil.getConstructor(SimpleCache.class));
     }
-
-
 }

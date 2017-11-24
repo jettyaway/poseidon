@@ -1,6 +1,11 @@
 package com.voxlearning.poseidon.core.util;
 
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 /**
  * 类型工具类
  *
@@ -34,4 +39,63 @@ public class ClassUtil {
         }
         return true;
     }
+
+    /**
+     * 返回参数所代表的类型　如果参数为<code>null</code> 则返回<code>null</code>
+     *
+     * @param args 参数列表
+     * @return 类型数组
+     */
+    public static Class<?>[] getClasses(Object... args) {
+        return Stream.of(args).map(arg -> {
+            if (Objects.isNull(arg)) {
+                return Object.class;
+            }
+            return arg.getClass();
+        }).toArray(Class[]::new);
+    }
+
+    /**
+     * 获取一组类型的默认值
+     *
+     * @param classes 　类型数组
+     * @return object 数组
+     */
+    public static Object[] getDefaultValue(Class<?>[] classes) {
+        return Stream.of(classes).map(ClassUtil::getDefaultValue).toArray(Object[]::new);
+    }
+
+    /**
+     * 返回基本类的默认值，其他类型返回<code>null</code>
+     *
+     * @param clazz 类
+     * @return object
+     */
+    public static Object getDefaultValue(Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            if (char.class == clazz) {
+                return (char) 0;
+            } else if (byte.class == clazz) {
+                return (byte) 0;
+            } else if (short.class == clazz) {
+                return (short) 0;
+            } else if (int.class == clazz) {
+                return 0;
+            } else if (float.class == clazz) {
+                return 0.0F;
+            } else if (long.class == clazz) {
+                return 0L;
+            } else if (double.class == clazz) {
+                return 0.0D;
+            } else if (boolean.class == clazz) {
+                return false;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isStatic(Method method) {
+        return Modifier.isStatic(method.getModifiers());
+    }
+
 }

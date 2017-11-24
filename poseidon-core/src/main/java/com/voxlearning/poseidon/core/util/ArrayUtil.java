@@ -51,4 +51,16 @@ public class ArrayUtil {
     public static <T> T[] newArray(Class<?> compentType, int newSize) {
         return (T[]) Array.newInstance(compentType, newSize);
     }
+
+
+    public static <T> String arrayToString(T[] array) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (T t : array) {
+            builder.append(t.toString()).append(",");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append("]");
+        return builder.toString();
+    }
 }

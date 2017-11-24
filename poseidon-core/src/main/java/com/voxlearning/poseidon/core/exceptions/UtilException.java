@@ -28,4 +28,8 @@ public class UtilException extends RuntimeException {
         super(StrUtil.format(template, args), e);
     }
 
+    public UtilException(String template, Object... args) {
+        super(StrUtil.format(template, args));
+    }
+
 }
