@@ -1,4 +1,4 @@
-package com.voxlearning.poseidon.api.annotation;
+package com.voxlearning.poseidon.api.annotation.dao.hbase;
 
 
 import java.lang.annotation.*;

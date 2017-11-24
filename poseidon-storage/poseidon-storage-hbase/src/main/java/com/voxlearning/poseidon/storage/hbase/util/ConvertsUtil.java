@@ -1,8 +1,11 @@
 package com.voxlearning.poseidon.storage.hbase.util;
 
+import com.voxlearning.poseidon.core.lang.Preconditions;
+import com.voxlearning.poseidon.core.util.ObjectUtil;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -24,5 +27,94 @@ public class ConvertsUtil {
 
     public static byte[] convertToBytes(Object obj) {
         return obj.getClass().equals(String.class) ? Bytes.toBytes(obj.toString()) : (!obj.getClass().equals(Integer.TYPE) && !obj.getClass().equals(Integer.class) ? (!obj.getClass().equals(Short.class) && !obj.getClass().equals(Short.TYPE) ? (!obj.getClass().equals(Integer.class) && !obj.getClass().equals(Integer.TYPE) ? (!obj.getClass().equals(Float.class) && !obj.getClass().equals(Float.TYPE) ? (!obj.getClass().equals(Double.class) && !obj.getClass().equals(Double.TYPE) ? (!obj.getClass().equals(Long.class) && !obj.getClass().equals(Long.TYPE) ? (!obj.getClass().equals(Boolean.class) && !obj.getClass().equals(Boolean.TYPE) ? null : (obj == null ? Bytes.toBytes(false) : Bytes.toBytes(Boolean.parseBoolean(obj.toString())))) : (obj.toString() == null ? Bytes.toBytes(0L) : Bytes.toBytes(Long.parseLong(obj.toString())))) : (obj == null ? Bytes.toBytes(0.0D) : Bytes.toBytes(Double.parseDouble(obj.toString())))) : (obj == null ? Bytes.toBytes(0.0F) : Bytes.toBytes(Float.parseFloat(obj.toString())))) : (obj == null ? Bytes.toBytes(0) : Bytes.toBytes(Integer.parseInt(obj.toString())))) : (obj == null ? Bytes.toBytes(0) : Bytes.toBytes(Short.parseShort(obj.toString())))) : Bytes.toBytes(Integer.parseInt(obj.toString())));
+    }
+
+    static Object fromBytes(byte[] bs, Class<?> type) {
+        if (bs == null) {
+            return null;
+        }
+        Preconditions.checkNotNull(type);
+
+        if (type == byte[].class) {
+            return bs;
+        }
+        if (type == BigDecimal.class) {
+            return Bytes.toBigDecimal(bs);
+        }
+        if (type == Boolean.class) {
+            return Bytes.toBoolean(bs);
+        }
+        if (type == Double.class) {
+            return Bytes.toDouble(bs);
+        }
+        if (type == Float.class) {
+            return Bytes.toFloat(bs);
+        }
+        if (type == Integer.class) {
+            return Bytes.toInt(bs);
+        }
+        if (type == Long.class) {
+            return Bytes.toLong(bs);
+        }
+        if (type == Short.class) {
+            return Bytes.toShort(bs);
+        }
+        if (type == String.class) {
+            return Bytes.toString(bs);
+        }
+        if (type == Character.class) {
+            String s = Bytes.toString(bs);
+            return s.charAt(0);
+        }
+        if (type == Date.class) {
+            long t = Bytes.toLong(bs);
+            return new Date(t);
+        }
+        return ObjectUtil.unserialize(bs);
+    }
+
+    static byte[] toBytes(Object value) {
+        Preconditions.checkNotNull(value);
+        if (value instanceof byte[]) {
+            return (byte[]) value;
+        }
+        if (value instanceof BigDecimal) {
+            BigDecimal d = (BigDecimal) value;
+            return Bytes.toBytes(d);
+        }
+        if (value instanceof Boolean) {
+            Boolean b = (Boolean) value;
+            return Bytes.toBytes(b);
+        }
+        if (value instanceof Double) {
+            Double d = (Double) value;
+            return Bytes.toBytes(d);
+        }
+        if (value instanceof Float) {
+            Float f = (Float) value;
+            return Bytes.toBytes(f);
+        }
+        if (value instanceof Integer) {
+            Integer i = (Integer) value;
+            return Bytes.toBytes(i);
+        }
+        if (value instanceof Long) {
+            Long l = (Long) value;
+            return Bytes.toBytes(l);
+        }
+        if (value instanceof Short) {
+            Short s = (Short) value;
+            return Bytes.toBytes(s);
+        }
+        if (value instanceof String) {
+            String s = (String) value;
+            return Bytes.toBytes(s);
+        }
+        if (value instanceof Character) {
+            Character c = (Character) value;
+            String s = c.toString();
+            return Bytes.toBytes(s);
+        }
+        return ObjectUtil.serialize(value);
     }
 }

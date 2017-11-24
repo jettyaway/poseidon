@@ -2,9 +2,9 @@ package com.voxlearning.poseidon.storage.hbase;
 
 
 
-import com.voxlearning.poseidon.api.annotation.HbaseDocument;
-import com.voxlearning.poseidon.api.annotation.HbaseField;
-import com.voxlearning.poseidon.api.annotation.HbaseRowKey;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseDocument;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseField;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseRowKey;
 
 import java.util.List;
 import java.util.Map;

@@ -3,6 +3,7 @@ package com.voxlearning.poseidon.core.util;
 import java.lang.reflect.Array;
 import java.util.Objects;
 
+
 /**
  * @author <a href="mailto:hao.su@17zuoye.com">hao.su</a>
  * @version 2017-11-23
@@ -63,4 +64,42 @@ public class ArrayUtil {
         builder.append("]");
         return builder.toString();
     }
+
+
+    public static <T> T[] clone(T[] array) {
+        if (Objects.isNull(array)) {
+            return null;
+        }
+        return array.clone();
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T clone(T obj) {
+        if (Objects.isNull(obj)) {
+            return null;
+        }
+        if (isArray(obj)) {
+            Object result;
+            Class<?> componentType = obj.getClass().getComponentType();
+            //基本类型
+            if (componentType.isPrimitive()) {
+                int length = Array.getLength(obj);
+                result = Array.newInstance(componentType, length);
+                while (length-- > 0) {
+                    Array.set(result, length, Array.get(obj, length));
+                }
+            } else {
+                result = ((Object[]) obj).clone();
+            }
+            return (T) result;
+        }
+        return null;
+    }
+
+
+    public static <T> boolean isArray(T obj) {
+        return obj.getClass().isArray();
+    }
+
 }

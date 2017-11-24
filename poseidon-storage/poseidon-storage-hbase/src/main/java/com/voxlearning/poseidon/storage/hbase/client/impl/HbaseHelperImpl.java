@@ -1,6 +1,6 @@
 package com.voxlearning.poseidon.storage.hbase.client.impl;
 
-import com.voxlearning.poseidon.api.annotation.HbaseField;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseField;
 import com.voxlearning.poseidon.core.util.*;
 import com.voxlearning.storage.core.hbase.IHbaseHelper;
 import com.voxlearning.poseidon.storage.hbase.util.ConvertsUtil;

@@ -93,7 +93,7 @@ public class ObjectUtil {
             }
             return count;
         }
-        if (obj.getClass().isArray() == true) {
+        if (obj.getClass().isArray()) {
             return Array.getLength(obj);
         }
         return -1;
@@ -152,7 +152,7 @@ public class ObjectUtil {
             }
             return false;
         }
-        if (obj.getClass().isArray() == true) {
+        if (obj.getClass().isArray()) {
             int len = Array.getLength(obj);
             for (int i = 0; i < len; i++) {
                 Object o = Array.get(obj, i);
@@ -216,15 +216,15 @@ public class ObjectUtil {
      * @return 克隆后的对象
      */
     public static <T> T clone(T obj) {
-        /*T result = ArrayUtil.clone(obj);
+        T result = ArrayUtil.clone(obj);
         if (null == result) {
             if (obj instanceof Cloneable) {
                 result = ReflectUtil.invoke(obj, "clone", new Object[]{});
             } else {
                 result = cloneByStream(obj);
             }
-        }*/
-        return null;
+        }
+        return result;
     }
 
     /**
@@ -357,6 +357,30 @@ public class ObjectUtil {
     }
 
     /**
+     * <p>Null safe comparison of Comparables.</p>
+     *
+     * @param <T>    type of the values processed by this method
+     * @param values the set of comparable values, may be null
+     * @return <ul>
+     * <li>If any objects are non-null and unequal, the lesser object.
+     * <li>If all objects are non-null and equal, the first.
+     * <li>If any of the comparables are null, the lesser of the non-null objects.
+     * <li>If all the comparables are null, null is returned.
+     * </ul>
+     */
+    public static <T extends Comparable<? super T>> T min(final T... values) {
+        T result = null;
+        if (values != null) {
+            for (final T value : values) {
+                if (compare(value, result, true) < 0) {
+                    result = value;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * {@code null}安全的对象比较，{@code null}对象排在末尾
      *
      * @param <T> 被比较对象类型
@@ -422,13 +446,65 @@ public class ObjectUtil {
      * @param obj Bean对象
      * @return Bean所有字段转为Map后的字符串
      * @since 3.2.0
-     */
+     *//*
     public static String toString(Object obj) {
         if (obj instanceof Map) {
             return ((Map<?, ?>) obj).toString();
         }
 
-        //return BeanUtil.beanToMap(obj).toString();
-        return null;
+        return BeanUtil.beanToMap(obj).toString();
+    }*/
+    // ToString
+    //-----------------------------------------------------------------------
+
+    /**
+     * <p>Gets the {@code toString} of an {@code Object} returning
+     * an empty string ("") if {@code null} input.</p>
+     * <p>
+     * <pre>
+     * ObjectUtils.toString(null)         = ""
+     * ObjectUtils.toString("")           = ""
+     * ObjectUtils.toString("bat")        = "bat"
+     * ObjectUtils.toString(Boolean.TRUE) = "true"
+     * </pre>
+     *
+     * @param obj the Object to {@code toString}, may be null
+     * @return the passed in Object's toString, or {@code ""} if {@code null} input
+     * @see StrUtil#defaultString(String)
+     * @see String#valueOf(Object)
+     * @since 2.0
+     * @deprecated this method has been replaced by {@code java.util.Objects.toString(Object)} in Java 7 and will be
+     * removed in future releases. Note however that said method will return "null" for null references, while this
+     * method returns and empty String. To preserve behavior use {@code java.util.Objects.toString(myObject, "")}
+     */
+    @Deprecated
+    public static String toString(final Object obj) {
+        return obj == null ? StrUtil.EMPTY : obj.toString();
+    }
+
+    /**
+     * <p>Gets the {@code toString} of an {@code Object} returning
+     * a specified text if {@code null} input.</p>
+     * <p>
+     * <pre>
+     * ObjectUtils.toString(null, null)           = null
+     * ObjectUtils.toString(null, "null")         = "null"
+     * ObjectUtils.toString("", "null")           = ""
+     * ObjectUtils.toString("bat", "null")        = "bat"
+     * ObjectUtils.toString(Boolean.TRUE, "null") = "true"
+     * </pre>
+     *
+     * @param obj     the Object to {@code toString}, may be null
+     * @param nullStr the String to return if {@code null} input, may be null
+     * @return the passed in Object's toString, or {@code nullStr} if {@code null} input
+     * @see StrUtil#defaultString(String, String)
+     * @see String#valueOf(Object)
+     * @since 2.0
+     * @deprecated this method has been replaced by {@code java.util.Objects.toString(Object, String)} in Java 7 and
+     * will be removed in future releases.
+     */
+    @Deprecated
+    public static String toString(final Object obj, final String nullStr) {
+        return obj == null ? nullStr : obj.toString();
     }
 }

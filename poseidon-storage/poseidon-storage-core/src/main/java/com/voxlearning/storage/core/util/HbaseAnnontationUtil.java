@@ -1,8 +1,8 @@
 package com.voxlearning.storage.core.util;
 
 
-import com.voxlearning.poseidon.api.annotation.HbaseDocument;
-import com.voxlearning.poseidon.api.annotation.HbaseRowKey;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseDocument;
+import com.voxlearning.poseidon.api.annotation.dao.hbase.HbaseRowKey;
 import com.voxlearning.poseidon.core.util.AnnoatationsUtil;
 
 public class HbaseAnnontationUtil {
