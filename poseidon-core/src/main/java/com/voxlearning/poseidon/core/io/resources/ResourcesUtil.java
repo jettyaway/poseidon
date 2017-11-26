@@ -1,6 +1,5 @@
-package com.voxlearning.poseidon.core.util;
+package com.voxlearning.poseidon.core.io.resources;
 
-import com.voxlearning.poseidon.core.io.resources.Resources;
 
 import java.net.URL;
 

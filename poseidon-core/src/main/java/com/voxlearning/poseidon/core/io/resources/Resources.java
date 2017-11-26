@@ -21,7 +21,7 @@ public interface Resources {
 
     String readString(Charset charset);
 
-    String readUtf8String(Charset charset);
+    String readUtf8String();
 
     byte[] readBytes() throws IOException;
 

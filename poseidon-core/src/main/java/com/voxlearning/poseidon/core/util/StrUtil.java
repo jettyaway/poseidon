@@ -117,6 +117,16 @@ public class StrUtil {
         return isBlank(sequence);
     }
 
+
+    public static boolean isEmpty(CharSequence sequence) {
+        return sequence == null || sequence.length() == 0;
+    }
+
+
+    public static boolean isNotEmpty(CharSequence sequence) {
+        return !isEmpty(sequence);
+    }
+
     /**
      * @param sequence1  要比较的字符串
      * @param sequence2  要比较的字符串
@@ -178,4 +188,169 @@ public class StrUtil {
 
         return builder.toString();
     }
+
+    public static String str(CharSequence cs) {
+        return null == cs ? null : cs.toString();
+    }
+
+    /**
+     * 忽略大小写去掉指定前缀
+     *
+     * @param str 字符串
+     * @param prefix 前缀
+     * @return 切掉后的字符串，若前缀不是 prefix， 返回原字符串
+     */
+    public static String removePrefixIgnoreCase(CharSequence str, CharSequence prefix) {
+        if (isEmpty(str) || isEmpty(prefix)) {
+            return str(str);
+        }
+
+        final String str2 = str.toString();
+        if (str2.toLowerCase().startsWith(prefix.toString().toLowerCase())) {
+            return subSuf(str2, prefix.length());// 截取后半段
+        }
+        return str2;
+    }
+
+    /**
+     * 切割后部分
+     *
+     * @param string 字符串
+     * @param fromIndex 切割开始的位置（包括）
+     * @return 切割后的字符串
+     */
+    public static String subSuf(CharSequence string, int fromIndex) {
+        if (isEmpty(string)) {
+            return null;
+        }
+        return sub(string, fromIndex, string.length());
+    }
+
+    /**
+     * 改进JDK subString<br>
+     * index从0开始计算，最后一个字符为-1<br>
+     * 如果from和to位置一样，返回 "" <br>
+     * 如果from或to为负数，则按照length从后向前数位置，如果绝对值大于字符串长度，则from归到0，to归到length<br>
+     * 如果经过修正的index中from大于to，则互换from和to example: <br>
+     * abcdefgh 2 3 =》 c <br>
+     * abcdefgh 2 -3 =》 cde <br>
+     *
+     * @param string String
+     * @param fromIndex 开始的index（包括）
+     * @param toIndex 结束的index（不包括）
+     * @return 字串
+     */
+    public static String sub(CharSequence string, int fromIndex, int toIndex) {
+        int len = string.length();
+
+        if (fromIndex < 0) {
+            fromIndex = len + fromIndex;
+            if (fromIndex < 0) {
+                fromIndex = 0;
+            }
+        } else if (fromIndex > len) {
+            fromIndex = len;
+        }
+
+        if (toIndex < 0) {
+            toIndex = len + toIndex;
+            if (toIndex < 0) {
+                toIndex = len;
+            }
+        } else if (toIndex > len) {
+            toIndex = len;
+        }
+
+        if (toIndex < fromIndex) {
+            int tmp = fromIndex;
+            fromIndex = toIndex;
+            toIndex = tmp;
+        }
+
+        if (fromIndex == toIndex) {
+            return EMPTY;
+        }
+
+        return string.toString().substring(fromIndex, toIndex);
+    }
+
+    /**
+     * 字符串是否以给定字符开始
+     *
+     * @param str 字符串
+     * @param c 字符
+     * @return 是否开始
+     */
+    public static boolean startWith(CharSequence str, char c) {
+        return c == str.charAt(0);
+    }
+
+    /**
+     * 是否以指定字符串开头
+     *
+     * @param str 被监测字符串
+     * @param prefix 开头字符串
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWith(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, false);
+    }
+
+    /**
+     * 是否以指定字符串开头，忽略大小写
+     *
+     * @param str 被监测字符串
+     * @param prefix 开头字符串
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWithIgnoreCase(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, true);
+    }
+
+    /**
+     * 给定字符串是否以任何一个字符串开始<br>
+     * 给定字符串和数组为空都返回false
+     *
+     * @param str 给定字符串
+     * @param prefixes 需要检测的开始字符串
+     * @return 给定字符串是否以任何一个字符串开始
+     * @since 3.0.6
+     */
+    public static boolean startWithAny(CharSequence str, CharSequence... prefixes) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(prefixes)) {
+            return false;
+        }
+
+        for (CharSequence suffix : prefixes) {
+            if (startWith(str, suffix, false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 是否以指定字符串开头<br>
+     * 如果给定的字符串和开头字符串都为null则返回true，否则任意一个值为null返回false
+     *
+     * @param str 被监测字符串
+     * @param prefix 开头字符串
+     * @param isIgnoreCase 是否忽略大小写
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWith(CharSequence str, CharSequence prefix, boolean isIgnoreCase) {
+        if (null == str || null == prefix) {
+            if (null == str && null == prefix) {
+                return true;
+            }
+            return false;
+        }
+
+        if (isIgnoreCase) {
+            return str.toString().toLowerCase().startsWith(prefix.toString().toLowerCase());
+        } else {
+            return str.toString().startsWith(prefix.toString());
+        }
+    }
+
 }

@@ -3,13 +3,17 @@ package com.voxlearning.poseidon.settings.dialect;
 import com.voxlearning.poseidon.core.getter.BasicTypeGetter;
 import com.voxlearning.poseidon.core.getter.OptBasicTypeGetter;
 import com.voxlearning.poseidon.core.io.watch.WatcherMonitor;
+import com.voxlearning.poseidon.core.lang.Preconditions;
 import com.voxlearning.poseidon.core.util.CharsetUtil;
+import com.voxlearning.poseidon.core.io.resources.ResourcesUtil;
+import com.voxlearning.poseidon.core.util.StrUtil;
 
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -28,8 +32,16 @@ public final class Props extends Properties implements BasicTypeGetter, OptBasic
     private WatcherMonitor watcherMonitor;
     private Charset charset = CharsetUtil.CHARSET_ISO_8859_1;
 
-    private Props(String path, Charset charset) {
+    public Props(String path, Charset charset) {
+        Preconditions.checkArgument(StrUtil.isNotBlank(path));
+        if (Objects.isNull(charset)) {
+            this.charset = charset;
+        }
+        this.load(ResourcesUtil.ResourgetResourceObj(path));
+    }
 
+    public Props(String path, String charsetName) {
+        this(path, Charset.forName(charsetName));
     }
 
 
