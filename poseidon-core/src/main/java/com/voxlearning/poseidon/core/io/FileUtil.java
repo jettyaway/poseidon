@@ -1,5 +1,8 @@
 package com.voxlearning.poseidon.core.io;
 
+import com.voxlearning.poseidon.core.util.StrUtil;
+import com.voxlearning.poseidon.core.util.URLUtil;
+
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,6 +13,32 @@ import java.util.Optional;
  * @since 17-11-22
  */
 public class FileUtil {
+
+    /**
+     * The Unix separator character.
+     */
+    private static final char UNIX_SEPARATOR = StrUtil.C_SLASH;
+    /**
+     * The Windows separator character.
+     */
+    private static final char WINDOWS_SEPARATOR = StrUtil.C_BACKSLASH;
+
+    /**
+     * Class文件扩展名
+     */
+    public static final String CLASS_EXT = ".class";
+    /**
+     * Jar文件扩展名
+     */
+    public static final String JAR_FILE_EXT = ".jar";
+    /**
+     * 在Jar中的路径jar的扩展名形式
+     */
+    public static final String JAR_PATH_EXT = ".jar!";
+    /**
+     * 当Path为文件形式时, path会加入一个表示文件的前缀
+     */
+    public static final String PATH_FILE_PRE = URLUtil.FILE_URL_PREFIX;
 
 
     /**

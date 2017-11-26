@@ -26,8 +26,11 @@ public final class Props extends Properties implements BasicTypeGetter, OptBasic
     private URL propertiesFileUrl;
 
     private WatcherMonitor watcherMonitor;
-    private Charset charset= CharsetUtil.CHARSET_ISO_8859_1;
+    private Charset charset = CharsetUtil.CHARSET_ISO_8859_1;
 
+    private Props(String path, Charset charset) {
+
+    }
 
 
     @Override
