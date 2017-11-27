@@ -292,7 +292,7 @@ public class WatcherMonitor extends Thread implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         isClose = true;
         IOUtil.close(watchService);
     }

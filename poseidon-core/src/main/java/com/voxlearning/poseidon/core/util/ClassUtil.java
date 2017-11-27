@@ -1,8 +1,12 @@
 package com.voxlearning.poseidon.core.util;
 
 
+import com.voxlearning.poseidon.core.io.FileUtil;
+import com.voxlearning.poseidon.core.io.resources.ResourcesUtil;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -96,6 +100,39 @@ public class ClassUtil {
 
     public static boolean isStatic(Method method) {
         return Modifier.isStatic(method.getModifiers());
+    }
+
+    /**
+     * 获取classPath路径
+     *
+     * @return
+     */
+    public static String getClassPath() {
+        return getClasspath(false);
+    }
+
+    /**
+     * 获取classpath
+     *
+     * @param isEncode 路径中是否包含中文
+     * @return classpath
+     */
+    public static String getClasspath(boolean isEncode) {
+        URL classPathURL = getClassPathURL();
+        String url = isEncode ? classPathURL.getPath() : URLUtil.getDecodedPath(classPathURL);
+        return FileUtil.normalize(url);
+    }
+
+    public static URL getClassPathURL() {
+        return getResourceURL(StrUtil.EMPTY);
+    }
+
+    public static URL getResourceURL(String resource) {
+        return ResourcesUtil.getResource(resource);
+    }
+
+    public static URL getResourceURL(String resource, Class<?> baseClass) {
+        return ResourcesUtil.getResource(resource, baseClass);
     }
 
 }

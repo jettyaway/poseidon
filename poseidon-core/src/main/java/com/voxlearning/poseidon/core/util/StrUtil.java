@@ -196,7 +196,7 @@ public class StrUtil {
     /**
      * 忽略大小写去掉指定前缀
      *
-     * @param str 字符串
+     * @param str    字符串
      * @param prefix 前缀
      * @return 切掉后的字符串，若前缀不是 prefix， 返回原字符串
      */
@@ -213,9 +213,27 @@ public class StrUtil {
     }
 
     /**
+     * 去掉指定的前缀
+     *
+     * @param path   　字符串
+     * @param prefix 　前缀
+     * @return 截取后的字符串，如果不是prefix 开头　返回原字符串
+     */
+    public static String removePrefix(CharSequence path, CharSequence prefix) {
+        if (isEmpty(path) || isEmpty(prefix)) {
+            return str(path);
+        }
+        String str = path.toString();
+        if (str.startsWith(prefix.toString())) {
+            return subSuf(str, prefix.length());
+        }
+        return str;
+    }
+
+    /**
      * 切割后部分
      *
-     * @param string 字符串
+     * @param string    字符串
      * @param fromIndex 切割开始的位置（包括）
      * @return 切割后的字符串
      */
@@ -235,9 +253,9 @@ public class StrUtil {
      * abcdefgh 2 3 =》 c <br>
      * abcdefgh 2 -3 =》 cde <br>
      *
-     * @param string String
+     * @param string    String
      * @param fromIndex 开始的index（包括）
-     * @param toIndex 结束的index（不包括）
+     * @param toIndex   结束的index（不包括）
      * @return 字串
      */
     public static String sub(CharSequence string, int fromIndex, int toIndex) {
@@ -278,7 +296,7 @@ public class StrUtil {
      * 字符串是否以给定字符开始
      *
      * @param str 字符串
-     * @param c 字符
+     * @param c   字符
      * @return 是否开始
      */
     public static boolean startWith(CharSequence str, char c) {
@@ -288,7 +306,7 @@ public class StrUtil {
     /**
      * 是否以指定字符串开头
      *
-     * @param str 被监测字符串
+     * @param str    被监测字符串
      * @param prefix 开头字符串
      * @return 是否以指定字符串开头
      */
@@ -299,7 +317,7 @@ public class StrUtil {
     /**
      * 是否以指定字符串开头，忽略大小写
      *
-     * @param str 被监测字符串
+     * @param str    被监测字符串
      * @param prefix 开头字符串
      * @return 是否以指定字符串开头
      */
@@ -311,7 +329,7 @@ public class StrUtil {
      * 给定字符串是否以任何一个字符串开始<br>
      * 给定字符串和数组为空都返回false
      *
-     * @param str 给定字符串
+     * @param str      给定字符串
      * @param prefixes 需要检测的开始字符串
      * @return 给定字符串是否以任何一个字符串开始
      * @since 3.0.6
@@ -333,8 +351,8 @@ public class StrUtil {
      * 是否以指定字符串开头<br>
      * 如果给定的字符串和开头字符串都为null则返回true，否则任意一个值为null返回false
      *
-     * @param str 被监测字符串
-     * @param prefix 开头字符串
+     * @param str          被监测字符串
+     * @param prefix       开头字符串
      * @param isIgnoreCase 是否忽略大小写
      * @return 是否以指定字符串开头
      */
@@ -352,5 +370,6 @@ public class StrUtil {
             return str.toString().startsWith(prefix.toString());
         }
     }
+
 
 }
