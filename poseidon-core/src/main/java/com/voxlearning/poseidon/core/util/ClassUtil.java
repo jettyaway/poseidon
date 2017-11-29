@@ -6,6 +6,7 @@ import com.voxlearning.poseidon.core.io.resources.ResourcesUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -133,6 +134,21 @@ public class ClassUtil {
 
     public static URL getResourceURL(String resource, Class<?> baseClass) {
         return ResourcesUtil.getResource(resource, baseClass);
+    }
+
+    /**
+     * 获得执行类型的指定位置的泛型参数类型
+     *
+     * @param clazz 　指定类型
+     * @param index 　泛型参数索引
+     * @return {@link Class}
+     */
+    public static Class<?> getTypeArgument(Class<?> clazz, int index) {
+        Type typeArgument = TypeUtil.getTypeArgument(clazz, index);
+        if (Objects.nonNull(typeArgument) && typeArgument instanceof Class) {
+            return (Class<?>) typeArgument;
+        }
+        return null;
     }
 
 }

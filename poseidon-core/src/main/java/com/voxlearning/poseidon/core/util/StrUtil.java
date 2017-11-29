@@ -371,5 +371,23 @@ public class StrUtil {
         }
     }
 
+    /**
+     * 将任意对象转化为字符串
+     *
+     * @param value 　需要转化的对象
+     * @return {@link String}
+     */
+    public static String convertToString(Object value) {
+        if (Objects.isNull(value)) {
+            return null;
+        }
+        if (value instanceof String) {
+            return (String) value;
+        } else if (ArrayUtil.isArray(value)) {
+            return ArrayUtil.toString(value);
+        }
+        return value.toString();
+    }
+
 
 }

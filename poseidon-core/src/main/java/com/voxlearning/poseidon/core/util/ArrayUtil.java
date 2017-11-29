@@ -1,6 +1,9 @@
 package com.voxlearning.poseidon.core.util;
 
+import com.voxlearning.poseidon.core.exceptions.UtilException;
+
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -51,6 +54,68 @@ public class ArrayUtil {
     @SuppressWarnings("unchecked")
     public static <T> T[] newArray(Class<?> compentType, int newSize) {
         return (T[]) Array.newInstance(compentType, newSize);
+    }
+
+    /**
+     * 强制转化数组
+     * 转化后生成一个新的数组
+     *
+     * @param type 　数组类型或者数组元素类型
+     * @param obj  　原数组
+     * @return 转化后的数组
+     */
+    public static Object[] cast(Class<?> type, Object obj) {
+        if (Objects.isNull(obj)) {
+            throw new NullPointerException("origin array can not be null");
+        }
+        if (!obj.getClass().isArray()) {
+            throw new IllegalArgumentException("Argument obj must be array.");
+        }
+        if (Objects.isNull(type)) {
+            return (Object[]) obj;
+        }
+        Class<?> typeClass = type.isArray() ? type.getComponentType() : type;
+        Object[] objArray = (Object[]) obj;
+        Object[] result = ArrayUtil.newArray(typeClass, objArray.length);
+        System.arraycopy(objArray, 0, result, 0, objArray.length);
+        return result;
+    }
+
+    /**
+     * 将数组或者集合转化为{@link String}
+     *
+     * @param object 集合或者数组对象
+     * @return {@link String}
+     */
+    public static String toString(Object object) {
+        if (ArrayUtil.isArray(object)) {
+            try {
+                return Arrays.deepToString((Object[]) object);
+            } catch (RuntimeException e) {
+                String className = object.getClass().getComponentType().getName();
+                switch (className) {
+                    case "long":
+                        return Arrays.toString((long[]) object);
+                    case "int":
+                        return Arrays.toString((int[]) object);
+                    case "short":
+                        return Arrays.toString((short[]) object);
+                    case "byte":
+                        return Arrays.toString((byte[]) object);
+                    case "float":
+                        return Arrays.toString((float[]) object);
+                    case "double":
+                        return Arrays.toString((double[]) object);
+                    case "char":
+                        return Arrays.toString((char[]) object);
+                    case "boolean":
+                        return Arrays.toString((boolean[]) object);
+                    default:
+                        throw new UtilException(e, "error type of array");
+                }
+            }
+        }
+        return object.toString();
     }
 
 
