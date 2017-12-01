@@ -5,6 +5,8 @@ import com.voxlearning.poseidon.core.exceptions.UtilException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 
 /**
@@ -139,6 +141,13 @@ public class ArrayUtil {
 
     }
 
+    /**
+     * 克隆数组对象 如果不是对象则返回<code>null</code>
+     *
+     * @param obj 对象
+     * @param <T> 类型
+     * @return 克隆后的数组对象
+     */
     @SuppressWarnings("unchecked")
     public static <T> T clone(T obj) {
         if (Objects.isNull(obj)) {
@@ -163,8 +172,55 @@ public class ArrayUtil {
     }
 
 
+    /**
+     * 判断是否为数组
+     *
+     * @param obj 对象
+     * @param <T> 泛型类型
+     * @return 是否为数组 true:是 false:不是
+     */
     public static <T> boolean isArray(T obj) {
         return obj.getClass().isArray();
     }
+
+    //------------------------------------wrap and unwrap --------------------------------------------------------------
+
+
+    /**
+     * int 类型数组 转到Integer数组
+     *
+     * @param values int 数组
+     * @return Integer[] {@link Integer}
+     */
+    public static Integer[] wrap(int... values) {
+        if (Objects.isNull(values)) {
+            return null;
+        }
+        int len = values.length;
+        Integer[] wraps = new Integer[len];
+        for (int i = 0; i < len; i++) {
+            wraps[i] = Integer.valueOf(values[i]);
+        }
+        return wraps;
+    }
+
+    /**
+     * Integer 类型数组 转到int数组
+     *
+     * @param values
+     * @return int[]
+     */
+    public static int[] unWrap(Integer... values) {
+        if (Objects.isNull(values)) {
+            return null;
+        }
+        int len = values.length;
+        int[] unWrap = new int[len];
+        for (int i = 0; i < len; i++) {
+            unWrap[i] = values[i].intValue();
+        }
+        return unWrap;
+    }
+
 
 }
