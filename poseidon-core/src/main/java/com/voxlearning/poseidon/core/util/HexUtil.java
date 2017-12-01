@@ -89,13 +89,15 @@ public class HexUtil {
         return out;
     }
 
+
+
     /**
      * 将一个字符数组转化为字符数组
      *
      * @param hexData 十六进制字符数组
      * @return 字节数组
      */
-    private static byte[] decodeHex(char[] hexData) {
+    public static byte[] decodeHex(char[] hexData) {
         int len = hexData.length;
         //如果char数组的长度为奇数,则不合法
         if ((len & 0X01) != 0) {
