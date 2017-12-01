@@ -1,5 +1,6 @@
 package com.voxlearning.poseidon.core.util;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
@@ -408,5 +409,114 @@ public class StrUtil {
     }
 
 
+    public static String str(Byte[] data, Charset charset) {
+        if (Objects.isNull(data)) {
+            return null;
+        }
+        byte[] bytes = new byte[data.length];
+        Byte byteValue;
+        for (int i = 0; i < data.length; i++) {
+            byteValue = data[i];
+            bytes[i] = Objects.isNull(byteValue) ? -1 : byteValue.byteValue();
+        }
+        return str(bytes, charset);
+    }
+
+    public static String str(Byte[] data, String charsetName) {
+        return str(data, StrUtil.isBlank(charsetName) ? Charset.defaultCharset() : Charset.forName(charsetName));
+    }
+
+    public static String str(byte[] data, String charsetName) {
+        return str(data, StrUtil.isBlank(charsetName) ? Charset.defaultCharset() : Charset.forName(charsetName));
+    }
+
+
+    /**
+     * 将byte数组转化为字符串
+     *
+     * @param data    byte数组
+     * @param charset 编码格式
+     * @return {@link String}
+     */
+    public static String str(byte[] data, Charset charset) {
+        if (Objects.isNull(data)) {
+            return null;
+        }
+        if (Objects.isNull(charset)) {
+            return new String(data);
+        }
+        return new String(data, charset);
+    }
+
+
+    public static String str(ByteBuffer byteBuffer, String charsetName) {
+        return str(byteBuffer, StrUtil.isBlank(charsetName) ? Charset.defaultCharset() : Charset.forName(charsetName));
+    }
+
+    /**
+     * 将byteBuffer转化为String
+     *
+     * @param byteBuffer 需要转化的对象
+     * @param charset    编码格式
+     * @return 转化后的字符串
+     * @see String
+     */
+    public static String str(ByteBuffer byteBuffer, Charset charset) {
+        if (Objects.isNull(byteBuffer)) {
+            return null;
+        }
+        if (Objects.isNull(charset)) {
+            charset = Charset.defaultCharset();
+        }
+        return charset.decode(byteBuffer).toString();
+    }
+
+    /**
+     * 将对象转化为字符串
+     *
+     * @param obj     对象
+     * @param charset 编码格式
+     * @return
+     */
+    public static String str(Object obj, Charset charset) {
+        if (Objects.isNull(obj)) {
+            return null;
+        }
+        if (obj instanceof String) {
+            return (String) obj;
+        } else if (obj instanceof byte[]) {
+            return str((byte[]) obj, charset);
+        } else if (obj instanceof Byte[]) {
+            return str((Byte[]) obj, charset);
+        } else if (obj instanceof ByteBuffer) {
+            return str(obj, charset);
+        } else if (ArrayUtil.isArray(obj)) {
+            return ArrayUtil.toString(obj);
+        }
+        return obj.toString();
+    }
+
+    /**
+     * 转化为指定编码的字符串
+     *
+     * @param obj         对象
+     * @param charsetName 编码名称
+     * @return 转化后的字符串
+     */
+    public static String str(Object obj, String charsetName) {
+        return str(obj, StrUtil.isBlank(charsetName) ? Charset.defaultCharset() : Charset.forName(charsetName));
+    }
+
+    /**
+     * object 转字符串
+     * 格式为UTF-8
+     *
+     * @param obj 对象
+     * @return 转化后的字符串
+     */
+    public static String utf8Str(Object obj) {
+        return str(obj, CharsetUtil.CHARSET_UTF_8);
+    }
 }
+
 
