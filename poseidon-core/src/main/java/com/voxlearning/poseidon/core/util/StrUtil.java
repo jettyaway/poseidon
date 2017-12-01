@@ -1,5 +1,6 @@
 package com.voxlearning.poseidon.core.util;
 
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 /**
@@ -389,5 +390,23 @@ public class StrUtil {
         return value.toString();
     }
 
+    /**
+     * 将字符串转化为字节数组
+     *
+     * @param value   字符串
+     * @param charset 编码
+     * @return 字节数组
+     */
+    public static byte[] bytes(CharSequence value, Charset charset) {
+        if (Objects.isNull(value)) {
+            return null;
+        }
+        if (Objects.isNull(charset)) {
+            return value.toString().getBytes();
+        }
+        return value.toString().getBytes(charset);
+    }
+
 
 }
+

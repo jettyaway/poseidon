@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ConvertFactory {
 
-    private static final ConvertFactory convertFactory = new ConvertFactory();
+    private static final ConvertFactory INSTANCE = new ConvertFactory();
 
     private Map<Type, Converter<?>> defaultConvertMap;
 
@@ -31,6 +31,10 @@ public class ConvertFactory {
 
     private ConvertFactory() {
         registConvert();
+    }
+
+    public static ConvertFactory getInstance() {
+        return INSTANCE;
     }
 
     public void putCustom(Type type, Class<? extends Converter<?>> converterClass) {
