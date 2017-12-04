@@ -245,7 +245,7 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
 
     @Override
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key, E defaultValue) {
-        return null;
+        return Optional.ofNullable(Convert.toEnum(clazz, getStr(key), defaultValue));
     }
 
     @Override
@@ -290,26 +290,26 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
 
     @Override
     public Optional<Double> getDouble(String key) {
-        return getDouble(key,null);
+        return getDouble(key, null);
     }
 
     @Override
     public Optional<Byte> getByte(String key) {
-        return getByte(key,null);
+        return getByte(key, null);
     }
 
     @Override
     public Optional<BigDecimal> getBigDecimal(String key) {
-        return getBigDecimal(key,null);
+        return getBigDecimal(key, null);
     }
 
     @Override
     public Optional<BigInteger> getBigInteger(String key) {
-        return getBigInteger(key,null);
+        return getBigInteger(key, null);
     }
 
     @Override
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key) {
-        return null;
+        return getEnum(clazz,key,null);
     }
 }
