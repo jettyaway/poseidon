@@ -1,5 +1,8 @@
 package com.voxlearning.poseidon.core.convert;
 
+
+import com.voxlearning.poseidon.core.convert.converter.EnumConverter;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -151,12 +154,34 @@ public class Convert {
 
     //TODO ADD ENUM and COLLECTION converter
 
+    /**
+     * 将对象转化为枚举对象<br/>
+     * 如果给定的值为空或者转化失败则返回默认值<br/>
+     *
+     * @param clazz        枚举的Class
+     * @param value        值
+     * @param defaultValue 默认值
+     * @param <E>          枚举的类型
+     * @return 转换后的枚举类型 {@link Enum}
+     */
+    public static <E extends Enum<E>> E toEnum(Class<E> clazz, Object value, E defaultValue) {
+        return (new EnumConverter<>(clazz)).convert(value, defaultValue);
+    }
 
-
+    /**
+     * 将对象转化为枚举对象<br/>
+     * 如果给定的值为空或者转化失败则返回默认值<code>null</code><br/>
+     *
+     * @param clazz 枚举的Class
+     * @param value 值
+     * @param <E>   枚举的类型
+     * @return 转换后的枚举类型 {@link Enum}
+     */
+    public static <E extends Enum<E>> E toEnum(Class<E> clazz, Object value) {
+        return toEnum(clazz, value, null);
+    }
 
     // ------------------------------------------------------hex 十六进制------------------------------------------------
-
-
 
 
     public static <T> T convert(Class<T> type, Object value) {

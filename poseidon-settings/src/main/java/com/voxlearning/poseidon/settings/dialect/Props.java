@@ -1,5 +1,6 @@
 package com.voxlearning.poseidon.settings.dialect;
 
+import com.voxlearning.poseidon.core.convert.Convert;
 import com.voxlearning.poseidon.core.getter.BasicTypeGetter;
 import com.voxlearning.poseidon.core.getter.OptBasicTypeGetter;
 import com.voxlearning.poseidon.core.io.resources.*;
@@ -30,7 +31,7 @@ import java.util.Properties;
  * @version 2017-11-21
  * @since 17-11-21
  */
-public final class Props extends Properties implements BasicTypeGetter, OptBasicTypeGetter {
+public final class Props extends Properties implements BasicTypeGetter<String>, OptBasicTypeGetter<String> {
 
     private static final long serialVersionUID = -1202889668984386112L;
 
@@ -144,7 +145,7 @@ public final class Props extends Properties implements BasicTypeGetter, OptBasic
 
     public void load(Resources urlResource) {
         this.propertiesFileUrl = urlResource.getURL();
-        if (Objects.isNull(urlResource)) {
+        if (Objects.isNull(propertiesFileUrl)) {
             throw new SettingRuntimeException("can not find properties file:[%s]", urlResource);
         }
         logger.debug("Load properties [{}]", propertiesFileUrl.getPath());
@@ -182,132 +183,133 @@ public final class Props extends Properties implements BasicTypeGetter, OptBasic
 
 
     @Override
-    public Optional<Object> getObj(Object key, Object defaultValue) {
+    public Optional<Object> getObj(String key, Object defaultValue) {
+        Object value = getStr(key, Objects.isNull(defaultValue) ? null : defaultValue.toString()).orElse(null);
+        return Optional.ofNullable(value);
+    }
+
+    @Override
+    public Optional<String> getStr(String key, String defaultValue) {
+        return Optional.ofNullable(super.getProperty(key, defaultValue));
+    }
+
+    @Override
+    public Optional<Integer> getInt(String key, Integer defaultValue) {
+        return Optional.ofNullable(Convert.toInt(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Short> getShort(String key, Short defaultValue) {
+        return Optional.ofNullable(Convert.toShort(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Boolean> getBoolean(String key, Boolean defaultValue) {
+        return Optional.ofNullable(Convert.toBoolean(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Long> getLong(String key, Long defaultValue) {
+        return Optional.ofNullable(Convert.toLong(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Character> getChar(String key, Character defaultValue) {
+        return Optional.ofNullable(Convert.toChar(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Float> getFloat(String key, Float defaultValue) {
+        return Optional.ofNullable(Convert.toFloat(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Double> getDouble(String key, Double defaultValue) {
+        return Optional.ofNullable(Convert.toDouble(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<Byte> getByte(String key, Byte defaultValue) {
+        return Optional.ofNullable(Convert.toByte(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<BigDecimal> getBigDecimal(String key, BigDecimal defaultValue) {
+        return Optional.ofNullable(Convert.toBigDecimal(getStr(key), defaultValue));
+    }
+
+    @Override
+    public Optional<BigInteger> getBigInteger(String key, BigInteger defaultValue) {
+        return Optional.ofNullable(Convert.toBigInteger(getStr(key), defaultValue));
+    }
+
+    @Override
+    public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key, E defaultValue) {
         return null;
     }
 
     @Override
-    public Optional<String> getStr(Object key, String defaultValue) {
-        return null;
+    public Optional<Object> getObj(String key) {
+        return getObj(key, null);
     }
 
     @Override
-    public Optional<Integer> getInt(Object key, Integer defaultValue) {
-        return null;
+    public Optional<String> getStr(String key) {
+        return Optional.ofNullable(super.getProperty(key));
     }
 
     @Override
-    public Optional<Short> getShort(Object key, Short defaultValue) {
-        return null;
+    public Optional<Integer> getInt(String key) {
+        return getInt(key, null);
     }
 
     @Override
-    public Optional<Boolean> getBoolean(Object key, Boolean defaultValue) {
-        return null;
+    public Optional<Short> getShort(String key) {
+        return getShort(key, null);
     }
 
     @Override
-    public Optional<Long> getLong(Object key, Long defaultValue) {
-        return null;
+    public Optional<Boolean> getBoolean(String key) {
+        return getBoolean(key, null);
     }
 
     @Override
-    public Optional<Character> getChar(Object key, Character defaultValue) {
-        return null;
+    public Optional<Long> getLong(String key) {
+        return getLong(key, null);
     }
 
     @Override
-    public Optional<Float> getFloat(Object key, Float defaultValue) {
-        return null;
+    public Optional<Character> getChar(String key) {
+        return getChar(key, null);
     }
 
     @Override
-    public Optional<Double> getDouble(Object key, Double defaultValue) {
-        return null;
+    public Optional<Float> getFloat(String key) {
+        return getFloat(key, null);
     }
 
     @Override
-    public Optional<Byte> getByte(Object key, Byte defaultValue) {
-        return null;
+    public Optional<Double> getDouble(String key) {
+        return getDouble(key,null);
     }
 
     @Override
-    public Optional<BigDecimal> getBigDecimal(Object key, BigDecimal defaultValue) {
-        return null;
+    public Optional<Byte> getByte(String key) {
+        return getByte(key,null);
     }
 
     @Override
-    public Optional<BigInteger> getBigInteger(Object key, BigInteger defaultValue) {
-        return null;
+    public Optional<BigDecimal> getBigDecimal(String key) {
+        return getBigDecimal(key,null);
     }
 
     @Override
-    public Optional getEnum(Class clazz, Object key, Enum defaultValue) {
-        return null;
+    public Optional<BigInteger> getBigInteger(String key) {
+        return getBigInteger(key,null);
     }
 
     @Override
-    public Optional<Object> getObj(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<String> getStr(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Integer> getInt(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Short> getShort(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Boolean> getBoolean(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Long> getLong(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Character> getChar(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Float> getFloat(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Double> getDouble(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<Byte> getByte(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<BigDecimal> getBigDecimal(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional<BigInteger> getBigInteger(Object key) {
-        return null;
-    }
-
-    @Override
-    public Optional getEnum(Class clazz, Object key) {
+    public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key) {
         return null;
     }
 }
