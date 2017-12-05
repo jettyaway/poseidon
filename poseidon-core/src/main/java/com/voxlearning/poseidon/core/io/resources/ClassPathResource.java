@@ -36,7 +36,7 @@ public class ClassPathResource extends URLResource {
 
     public ClassPathResource(String pathBaseClassLoader, ClassLoader loader, Class<?> clazz) {
         super((URL) null);
-        this.path = normalizePath(path);
+        this.path = normalizePath(pathBaseClassLoader);
         this.classLoader = Objects.isNull(loader) ? ClassLoaderUtil.getClassLoader() : loader;
         this.clazz = clazz;
         initUrl();

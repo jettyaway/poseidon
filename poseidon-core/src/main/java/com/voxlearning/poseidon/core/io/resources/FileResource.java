@@ -1,6 +1,7 @@
 package com.voxlearning.poseidon.core.io.resources;
 
-import com.voxlearning.poseidon.core.util.FileUtil;
+
+import com.voxlearning.poseidon.core.io.FileUtil;
 import com.voxlearning.poseidon.core.util.URLUtil;
 
 import java.io.File;

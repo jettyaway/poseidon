@@ -2,6 +2,7 @@ package com.voxlearning.poseidon.core.io;
 
 import com.voxlearning.poseidon.core.io.resources.ResourcesUtil;
 import com.voxlearning.poseidon.core.util.ClassUtil;
+import com.voxlearning.poseidon.core.util.CollectionUtil;
 import com.voxlearning.poseidon.core.util.StrUtil;
 import com.voxlearning.poseidon.core.util.URLUtil;
 
@@ -251,8 +252,7 @@ public class FileUtil {
             pathToUse = pathToUse.substring(1);
         }
 
-        //List<String> pathList = StrUtil.split(pathToUse, StrUtil.C_SLASH);
-        List<String> pathList = Arrays.asList(pathToUse.split("/"));
+        List<String> pathList = StrUtil.split(pathToUse, StrUtil.C_SLASH);
         List<String> pathElements = new LinkedList<String>();
         int tops = 0;
 
@@ -273,8 +273,6 @@ public class FileUtil {
                 }
             }
         }
-        //return prefix + CollectionUtil.join(pathElements, StrUtil.SLASH);
-        //TODO impl
-        return "";
+        return prefix + CollectionUtil.join(pathElements, StrUtil.SLASH);
     }
 }
