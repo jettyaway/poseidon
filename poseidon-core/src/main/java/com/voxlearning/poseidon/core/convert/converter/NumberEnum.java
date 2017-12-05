@@ -44,7 +44,15 @@ public enum NumberEnum {
     INTEGER(Integer.class) {
         @Override
         Number getValue(Object value) {
-            return Integer.valueOf(((Number) value).intValue());
+            if (value instanceof Number) {
+                return Integer.valueOf(((Number) value).intValue());
+            }
+            String valueStr = convertToString(value);
+            if (StrUtil.isBlank(valueStr)) {
+                return null;
+            }
+            return Integer.valueOf(valueStr);
+
         }
     },
     ATOMIC_INTEGER(AtomicInteger.class) {
