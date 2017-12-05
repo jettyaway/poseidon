@@ -136,6 +136,10 @@ public class ClassUtil {
         return ResourcesUtil.getResource(resource, baseClass);
     }
 
+    public static Class<?> getTypeArgument(Class<?> clazz) {
+        return getTypeArgument(clazz, 0);
+    }
+
     /**
      * 获得执行类型的指定位置的泛型参数类型
      *

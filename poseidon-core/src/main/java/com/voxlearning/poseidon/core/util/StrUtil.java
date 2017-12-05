@@ -1,7 +1,11 @@
 package com.voxlearning.poseidon.core.util;
 
+import com.voxlearning.poseidon.core.lang.StrSpliter;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -116,7 +120,7 @@ public class StrUtil {
      * @return 如果为<code>null</code> 或者长度等于0 或者为空格 返回true 否则返回false
      */
     public static boolean isNotBlank(CharSequence sequence) {
-        return isBlank(sequence);
+        return !isBlank(sequence);
     }
 
 
@@ -517,6 +521,252 @@ public class StrUtil {
     public static String utf8Str(Object obj) {
         return str(obj, CharsetUtil.CHARSET_UTF_8);
     }
+
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, char searchChar) {
+        return indexOf(str, searchChar, 0);
+    }
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @param start      起始位置，如果小于0，从0开始查找
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, char searchChar, int start) {
+        if (str instanceof String) {
+            return ((String) str).indexOf(searchChar, start);
+        } else {
+            return indexOf(str, searchChar, start, -1);
+        }
+    }
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @param start      起始位置，如果小于0，从0开始查找
+     * @param end        终止位置，如果超过str.length()则默认查找到字符串末尾
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, char searchChar, int start, int end) {
+        final int len = str.length();
+        if (start < 0 || start > len) {
+            start = 0;
+        }
+        if (end > len || end < 0) {
+            end = len;
+        }
+        for (int i = start; i < end; i++) {
+            if (str.charAt(i) == searchChar) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 指定范围内查找字符串
+     * <p>
+     * <pre>
+     * StrUtil.indexOfIgnoreCase(null, *, *)          = -1
+     * StrUtil.indexOfIgnoreCase(*, null, *)          = -1
+     * StrUtil.indexOfIgnoreCase("", "", 0)           = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "A", 0)  = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 0)  = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "AB", 0) = 1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 3)  = 5
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 9)  = -1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", -1) = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "", 2)   = 2
+     * StrUtil.indexOfIgnoreCase("abc", "", 9)        = -1
+     * </pre>
+     *
+     * @param str       字符串
+     * @param searchStr 需要查找位置的字符串
+     * @param fromIndex 起始位置
+     * @return 位置
+     * @since 3.2.1
+     */
+    public static int indexOfIgnoreCase(final CharSequence str, final CharSequence searchStr, int fromIndex) {
+        return indexOf(str, searchStr, fromIndex, true);
+    }
+
+    /**
+     * 指定范围内反向查找字符串
+     *
+     * @param str        字符串
+     * @param searchStr  需要查找位置的字符串
+     * @param fromIndex  起始位置
+     * @param ignoreCase 是否忽略大小写
+     * @return 位置
+     * @since 3.2.1
+     */
+    public static int indexOf(final CharSequence str, final CharSequence searchStr, int fromIndex, boolean ignoreCase) {
+        if (str == null || searchStr == null) {
+            return INDEX_NOT_FOUND;
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+
+        final int endLimit = str.length() - searchStr.length() + 1;
+        if (fromIndex > endLimit) {
+            return INDEX_NOT_FOUND;
+        }
+        if (searchStr.length() == 0) {
+            return fromIndex;
+        }
+
+        if (false == ignoreCase) {
+            //不忽略大小写调用JDK方法
+            return str.toString().indexOf(searchStr.toString(), fromIndex);
+        }
+
+        for (int i = fromIndex; i < endLimit; i++) {
+            if (isSubEquals(str, i, searchStr, 0, searchStr.length(), true)) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 截取两个字符串的不同部分（长度一致），判断截取的子串是否相同<br>
+     * 任意一个字符串为null返回false
+     *
+     * @param str1       第一个字符串
+     * @param start1     第一个字符串开始的位置
+     * @param str2       第二个字符串
+     * @param start2     第二个字符串开始的位置
+     * @param length     截取长度
+     * @param ignoreCase 是否忽略大小写
+     * @return 子串是否相同
+     * @since 3.2.1
+     */
+    public static boolean isSubEquals(CharSequence str1, int start1, CharSequence str2, int start2, int length, boolean ignoreCase) {
+        if (null == str1 || null == str2) {
+            return false;
+        }
+
+        return str1.toString().regionMatches(ignoreCase, start1, str2.toString(), start2, length);
+    }
+
+
+    // ----------------------------------------------------------------------------------SPLIT
+
+    /**
+     * 切分字符串
+     * a#b#c =>[a,b,c]<br/>
+     * a##b#c => [a,"",b,c]
+     *
+     * @param value 被切分的字符串
+     * @param split 分隔的字符串
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence value, char split) {
+        return split(value,split,0);
+    }
+
+    /**
+     * 切分字符串，不去除切分后每个元素两边的空白符，不去除空白项
+     * a#b#c =>[a,b,c]<br/>
+     * a##b#c => [a,"",b,c]
+     *
+     * @param value 被切分的字符串
+     * @param split 分隔的字符串
+     * @param limit 限制分片数，-1不限制
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence value, char split, int limit) {
+        return split(value, split, limit, false, false);
+    }
+
+    public static List<String> split(CharSequence value, char split, boolean isTrim, boolean ignoreEmpty) {
+        return split(value, split, 0, isTrim, ignoreEmpty);
+    }
+
+    public static List<String> split(CharSequence value, char split, int limit, boolean isTrim, boolean ignoreEmpty) {
+        if (Objects.isNull(value)) {
+            return new ArrayList<>(0);
+        }
+        return StrSpliter.split(value.toString(), split, limit, isTrim, ignoreEmpty);
+    }
+
+    public static String trimToNull(CharSequence str) {
+        final String trimStr = trim(str);
+        return EMPTY.equals(trimStr) ? null : trimStr;
+    }
+
+    public static String trim(CharSequence str) {
+        return (null == str) ? null : trim(str, 0);
+    }
+
+    /**
+     * 给定字符串数组全部做去首尾空格
+     *
+     * @param strs 字符串数组
+     */
+    public static void trim(String[] strs) {
+        if (null == strs) {
+            return;
+        }
+        String str;
+        for (int i = 0; i < strs.length; i++) {
+            str = strs[i];
+            if (null != str) {
+                strs[i] = str.trim();
+            }
+        }
+    }
+
+    /**
+     * 除去字符串头尾部的空白符，如果字符串是<code>null</code>，依然返回<code>null</code>。
+     *
+     * @param str  要处理的字符串
+     * @param mode <code>-1</code>表示trimStart，<code>0</code>表示trim全部， <code>1</code>表示trimEnd
+     * @return 除去指定字符后的的字符串，如果原字串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String trim(CharSequence str, int mode) {
+        if (str == null) {
+            return null;
+        }
+
+        int length = str.length();
+        int start = 0;
+        int end = length;
+
+        // 扫描字符串头部
+        if (mode <= 0) {
+            while ((start < end) && (NumberUtil.isBlankChar(str.charAt(start)))) {
+                start++;
+            }
+        }
+
+        // 扫描字符串尾部
+        if (mode >= 0) {
+            while ((start < end) && (NumberUtil.isBlankChar(str.charAt(end - 1)))) {
+                end--;
+            }
+        }
+
+        if ((start > 0) || (end < length)) {
+            return str.toString().substring(start, end);
+        }
+
+        return str.toString();
+    }
+
 }
 
 
