@@ -195,57 +195,57 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
 
     @Override
     public Optional<Integer> getInt(String key, Integer defaultValue) {
-        return Optional.ofNullable(Convert.toInt(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toInt(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Short> getShort(String key, Short defaultValue) {
-        return Optional.ofNullable(Convert.toShort(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toShort(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Boolean> getBoolean(String key, Boolean defaultValue) {
-        return Optional.ofNullable(Convert.toBoolean(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toBoolean(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Long> getLong(String key, Long defaultValue) {
-        return Optional.ofNullable(Convert.toLong(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toLong(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Character> getChar(String key, Character defaultValue) {
-        return Optional.ofNullable(Convert.toChar(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toChar(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Float> getFloat(String key, Float defaultValue) {
-        return Optional.ofNullable(Convert.toFloat(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toFloat(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Double> getDouble(String key, Double defaultValue) {
-        return Optional.ofNullable(Convert.toDouble(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toDouble(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Byte> getByte(String key, Byte defaultValue) {
-        return Optional.ofNullable(Convert.toByte(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toByte(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<BigDecimal> getBigDecimal(String key, BigDecimal defaultValue) {
-        return Optional.ofNullable(Convert.toBigDecimal(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toBigDecimal(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<BigInteger> getBigInteger(String key, BigInteger defaultValue) {
-        return Optional.ofNullable(Convert.toBigInteger(getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toBigInteger(getStr(key).orElse(null), defaultValue));
     }
 
     @Override
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key, E defaultValue) {
-        return Optional.ofNullable(Convert.toEnum(clazz, getStr(key), defaultValue));
+        return Optional.ofNullable(Convert.toEnum(clazz, getStr(key).orElse(null), defaultValue));
     }
 
     @Override
@@ -310,6 +310,6 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
 
     @Override
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, String key) {
-        return getEnum(clazz,key,null);
+        return getEnum(clazz, key, null);
     }
 }
