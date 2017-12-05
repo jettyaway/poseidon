@@ -1,0 +1,11 @@
+
+封装工作中用到的各种操作
+
+# TODO list
+1.properties 封装
+2.setting 封装
+3.redis 封装
+4.aerospike 封装
+6.kafka封装
+7.分布式锁封装
+
