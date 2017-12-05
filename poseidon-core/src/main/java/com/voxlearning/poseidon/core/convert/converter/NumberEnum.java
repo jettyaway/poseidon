@@ -27,17 +27,29 @@ public enum NumberEnum {
     SHORT(Short.class) {
         @Override
         Number getValue(Object value) {
-            if (!(value instanceof Number)) {
+            if ((value instanceof Number)) {
+                return Short.valueOf(((Number) value).shortValue());
+            }
+            String valueStr = convertToString(value);
+            if (StrUtil.isBlank(valueStr)) {
                 return null;
             }
-            return Short.valueOf(((Number) value).shortValue());
+            return Short.valueOf(valueStr);
         }
     },
 
     BYTE(Byte.class) {
         @Override
         Number getValue(Object value) {
-            return Byte.valueOf(((Number) value).byteValue());
+            if (value instanceof Number) {
+                return Byte.valueOf(((Number) value).byteValue());
+            }
+            String valueStr = convertToString(value);
+            if (StrUtil.isBlank(valueStr)) {
+                return null;
+            }
+            return Byte.valueOf(valueStr);
+
         }
     },
 
@@ -71,7 +83,14 @@ public enum NumberEnum {
     LONG(Long.class) {
         @Override
         Number getValue(Object value) {
-            return Long.valueOf(((Number) value).longValue());
+            if (value instanceof Number) {
+                return Long.valueOf(((Number) value).longValue());
+            }
+            String valueStr = convertToString(value);
+            if (Objects.isNull(valueStr)) {
+                return null;
+            }
+            return Long.valueOf(valueStr);
         }
     },
 
@@ -91,14 +110,28 @@ public enum NumberEnum {
     DOUBLE(Double.class) {
         @Override
         Number getValue(Object value) {
-            return Double.valueOf(((Number) value).doubleValue());
+            if (value instanceof Number) {
+                return Double.valueOf(((Number) value).doubleValue());
+            }
+            String valueStr = convertToString(value);
+            if (StrUtil.isBlank(valueStr)) {
+                return null;
+            }
+            return Double.valueOf(valueStr);
         }
     },
 
     FLOAT(Float.class) {
         @Override
         Number getValue(Object value) {
-            return Float.valueOf(((Number) value).floatValue());
+            if (value instanceof Number) {
+                return Float.valueOf(((Number) value).floatValue());
+            }
+            String valueStr = convertToString(value);
+            if (StrUtil.isBlank(valueStr)) {
+                return null;
+            }
+            return Float.valueOf(valueStr);
         }
     },
 
