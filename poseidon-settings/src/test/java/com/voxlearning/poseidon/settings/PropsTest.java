@@ -19,7 +19,11 @@ public class PropsTest {
         String user = props.getProperty("user");
         Assert.assertEquals(user, "root");
         int passwd = props.getInt("pass").orElse(123);
+        long pwd = props.getLong("pass").orElse(123L);
+        double pwd3 = props.getDouble("pass").orElse(123D);
         Assert.assertEquals(passwd, 123456);
+        Assert.assertEquals(pwd, 123456L);
+        Assert.assertEquals(pwd3, 123456D, 0.1);
 
         String driver = props.getProperty("driver");
         Assert.assertEquals(driver, "com.mysql.jdbc.Driver");
