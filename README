@@ -7,5 +7,5 @@
 3.redis 封装
 4.aerospike 封装
 6.kafka封装
-7.分布式锁封装
+7.分布式锁封装 redis 实现
 
