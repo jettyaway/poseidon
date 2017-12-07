@@ -1,5 +1,7 @@
 package com.voxlearning.poseidon.core.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
@@ -40,5 +42,70 @@ public class TypeUtil {
             return genericSuperclass.getActualTypeArguments();
         }
         return null;
+    }
+
+    /**
+     * 通过field获取type<br/>
+     * 优先获取GenericType 其次Type
+     *
+     * @param field 字段
+     * @return {@link Type} 可能返回{@code null}
+     */
+    public static Type getType(Field field) {
+        if (Objects.isNull(field)) {
+            return null;
+        }
+        Type type = field.getGenericType();
+        if (Objects.isNull(type)) {
+            type = field.getType();
+        }
+        return type;
+    }
+
+    /**
+     * 通过field获取Class
+     *
+     * @param field 字段
+     * @return {@link Class} 可能返回{@code null}
+     */
+    public static Class<?> getClass(Field field) {
+        if (Objects.isNull(field)) {
+            return null;
+        }
+        return field.getType();
+    }
+
+    public static Class<?> getReturnClass(Method method) {
+        if (Objects.isNull(method)) {
+            return null;
+        }
+        return method.getReturnType();
+    }
+
+    public static Type getReturnType(Method method) {
+        return method.getGenericReturnType();
+    }
+
+    public static Type getFirstParamType(Method method) {
+        return getParamType(method, 0);
+    }
+
+    public static Type getParamType(Method method, int index) {
+        Type[] parameterTypes = method.getGenericExceptionTypes();
+        if (Objects.isNull(parameterTypes) || parameterTypes.length <= 0 || index >= parameterTypes.length) {
+            return null;
+        }
+        return parameterTypes[index];
+    }
+
+    public static Class<?> getFirstParamClass(Method method) {
+        if (Objects.isNull(method)) {
+            return null;
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (Objects.isNull(parameterTypes) || parameterTypes.length <= 0) {
+            return null;
+        }
+        return parameterTypes[0];
     }
 }

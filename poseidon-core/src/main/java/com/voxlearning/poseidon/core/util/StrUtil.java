@@ -134,6 +134,19 @@ public class StrUtil {
     }
 
     /**
+     * 字符串比较
+     *
+     * @param sequence1
+     * @param sequence2
+     * @return
+     */
+    public static boolean equalsIgnoreCase(CharSequence sequence1, CharSequence sequence2) {
+        return equals(sequence1, sequence2, true);
+    }
+
+    /**
+     * 字符串比较
+     *
      * @param sequence1  要比较的字符串
      * @param sequence2  要比较的字符串
      * @param ignoreCase 是否忽略大小写
@@ -675,7 +688,7 @@ public class StrUtil {
      * @return 切分后的集合
      */
     public static List<String> split(CharSequence value, char split) {
-        return split(value,split,0);
+        return split(value, split, 0);
     }
 
     /**
@@ -696,6 +709,16 @@ public class StrUtil {
         return split(value, split, 0, isTrim, ignoreEmpty);
     }
 
+    /**
+     * 切分字符串为list
+     *
+     * @param value       字符串
+     * @param split       分割字符
+     * @param limit       限制分片数，-1不限制
+     * @param isTrim      是否去除切分后字符串两边的空格
+     * @param ignoreEmpty 是否区分大小写
+     * @return 切分后字符串的结合
+     */
     public static List<String> split(CharSequence value, char split, int limit, boolean isTrim, boolean ignoreEmpty) {
         if (Objects.isNull(value)) {
             return new ArrayList<>(0);
@@ -703,11 +726,41 @@ public class StrUtil {
         return StrSpliter.split(value.toString(), split, limit, isTrim, ignoreEmpty);
     }
 
+
+    /**
+     * 切分字符串为数组形式
+     *
+     * @param value     字符串
+     * @param separator 分隔符
+     * @return 字符串数组
+     */
+    public static String[] split(CharSequence value, CharSequence separator) {
+        if (Objects.isNull(value)) {
+            return new String[]{};
+        }
+        String separatorStr = Objects.isNull(separator) ? null : separator.toString();
+        return StrSpliter.splitToArray(value.toString(), separatorStr, 0, false, false);
+    }
+
+
+    /**
+     * 给定字符串数组全部做去首尾空格<br/>
+     * 如果为空则返回<code>null</code>
+     *
+     * @param str 字符串
+     * @return 去掉空格后的字符串
+     */
     public static String trimToNull(CharSequence str) {
         final String trimStr = trim(str);
         return EMPTY.equals(trimStr) ? null : trimStr;
     }
 
+    /**
+     * 除去字符串头尾部的空白符，如果字符串是<code>null</code>，依然返回<code>null</code>。
+     *
+     * @param str 字符串
+     * @return 去掉空格后的字符串
+     */
     public static String trim(CharSequence str) {
         return (null == str) ? null : trim(str, 0);
     }
@@ -765,6 +818,131 @@ public class StrUtil {
         }
 
         return str.toString();
+    }
+
+    /**
+     * 原字符串首字母大写并在其首部添加指定字符串 例如：str=name, preString=get =》 return getName
+     *
+     * @param str       被处理的字符串
+     * @param preString 添加的首部
+     * @return 处理后的字符串
+     */
+    public static String upperFirstAndAddPre(CharSequence str, String preString) {
+        if (str == null || preString == null) {
+            return null;
+        }
+        return preString + upperFirst(str);
+    }
+
+    /**
+     * 大写首字母<br>
+     * 例如：str = name, return Name
+     *
+     * @param str 字符串
+     * @return 字符串
+     */
+    public static String upperFirst(CharSequence str) {
+        if (null == str) {
+            return null;
+        }
+        if (str.length() > 0) {
+            char firstChar = str.charAt(0);
+            if (Character.isLowerCase(firstChar)) {
+                return Character.toUpperCase(firstChar) + subSuf(str, 1);
+            }
+        }
+        return str.toString();
+    }
+
+    /**
+     * 将下划线("_")转化为驼峰命名
+     * example: get_name => getName
+     *
+     * @param name 需要转化的字符串
+     * @return 转化后的字符串传
+     */
+    public static String toCamelCase(CharSequence name) {
+        if (Objects.isNull(name)) {
+            return null;
+        }
+        String name2 = name.toString();
+        if (!name2.contains(UNDERLINE)) {
+            return name2;
+        }
+        name2 = name2.toLowerCase();
+        String[] names = name2.split(UNDERLINE);
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean upper = false;
+        for (int i = 0; i < names.length; i++) {
+            char c = name.charAt(i);
+            if (UNDERLINE.equals(c)) {
+                upper = true;
+            } else if (upper) {
+                stringBuilder.append(Character.toUpperCase(c));
+                upper = false;
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 将驼峰式命名的字符串转换为下划线方式。如果转换前的驼峰式命名的字符串为空，则返回空字符串。<br>
+     * 例如：HelloWorld=》hello_world
+     *
+     * @param camelCaseStr 转换前的驼峰式命名的字符串
+     * @return 转换后下划线大写方式命名的字符串
+     */
+    public static String toUnderlineCase(CharSequence camelCaseStr) {
+        if (camelCaseStr == null) {
+            return null;
+        }
+
+        final int length = camelCaseStr.length();
+        StringBuilder sb = new StringBuilder();
+        char c;
+        boolean isPreUpperCase = false;
+        for (int i = 0; i < length; i++) {
+            c = camelCaseStr.charAt(i);
+            boolean isNextUpperCase = true;
+            if (i < (length - 1)) {
+                isNextUpperCase = Character.isUpperCase(camelCaseStr.charAt(i + 1));
+            }
+            if (Character.isUpperCase(c)) {
+                if (!isPreUpperCase || !isNextUpperCase) {
+                    if (i > 0) {
+                        sb.append(UNDERLINE);
+                    }
+                }
+                isPreUpperCase = true;
+            } else {
+                isPreUpperCase = false;
+            }
+            sb.append(Character.toLowerCase(c));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 生成getter方法
+     *
+     * @param fieldName 字段名字
+     * @return
+     */
+    public static String genGetter(String fieldName) {
+        return upperFirstAndAddPre(fieldName, "get");
+    }
+
+
+    /**
+     * 生成setter方法
+     *
+     * @param fieldName 字段名字
+     * @return
+     */
+    public static String genSetter(String fieldName) {
+        return upperFirstAndAddPre(fieldName, "set");
     }
 
 }

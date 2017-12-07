@@ -17,6 +17,8 @@ import java.util.stream.Stream;
  */
 public class ArrayUtil {
 
+    public static final int INDEX_NOT_FOUND = -1;
+
     /**
      * 向数组中添加内容
      *
@@ -262,14 +264,13 @@ public class ArrayUtil {
     }
 
 
-
     //--------------------------------------------------------------join
 
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param <T> 被处理的集合
-     * @param array 数组
+     * @param <T>         被处理的集合
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -302,7 +303,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -327,7 +328,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -352,7 +353,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -377,7 +378,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -402,7 +403,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -427,7 +428,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -452,7 +453,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -477,7 +478,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -502,7 +503,7 @@ public class ArrayUtil {
     /**
      * 以 conjunction 为分隔符将数组转换为字符串
      *
-     * @param array 数组
+     * @param array       数组
      * @param conjunction 分隔符
      * @return 连接后的字符串
      */
@@ -538,5 +539,120 @@ public class ArrayUtil {
         throw new UtilException(StrUtil.format("[{}] is not a Array!", array.getClass()));
     }
 
+    // -----------------------------------------------------------------------------contains
+
+    /**
+     * 数组中是否包含元素
+     *
+     * @param array 数组
+     * @param c     被检查的元素
+     * @return 是否包含
+     */
+    public static boolean contains(char[] array, char c) {
+        return indexOf(array, c) > INDEX_NOT_FOUND;
+    }
+
+
+    /**
+     * 返回数组中指定元素所在的第一个位置，未找到返回{@link #INDEX_NOT_FOUND}
+     *
+     * @param array 数组
+     * @param c     被检查的元素
+     * @return 数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     */
+    public static int indexOf(char[] array, char c) {
+        if (Objects.isNull(array)) {
+            return INDEX_NOT_FOUND;
+        }
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == c) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 返回数组中指定元素所在最后的位置，未找到返回{@link #INDEX_NOT_FOUND}
+     *
+     * @param array 数组
+     * @param c     被检查的元素
+     * @return 数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     */
+    public static int lastIndexOf(char[] array, char c) {
+        if (Objects.isNull(array)) {
+            return INDEX_NOT_FOUND;
+        }
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (array[i] == c) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 数组中是否包含元素
+     *
+     * @param <T>   数组元素类型
+     * @param array 数组
+     * @param value 被检查的元素
+     * @return 是否包含
+     */
+    public static <T> boolean contains(T[] array, T value) {
+        return indexOf(array, value) > INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 返回数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     *
+     * @param <T>   数组类型
+     * @param array 数组
+     * @param value 被检查的元素
+     * @return 数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     */
+    public static <T> int indexOf(T[] array, Object value) {
+        for (int i = 0; i < array.length; i++) {
+            if (ObjectUtil.equal(value, array[i])) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 返回数组中指定元素所在位置，忽略大小写，未找到返回{@link #INDEX_NOT_FOUND}
+     *
+     * @param array 数组
+     * @param value 被检查的元素
+     * @return 数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     * @since 3.1.2
+     */
+    public static int indexOfIgnoreCase(CharSequence[] array, CharSequence value) {
+        for (int i = 0; i < array.length; i++) {
+            if (StrUtil.equalsIgnoreCase(array[i], value)) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 返回数组中指定元素所在最后的位置，未找到返回{@link #INDEX_NOT_FOUND}
+     *
+     * @param <T>   数组类型
+     * @param array 数组
+     * @param value 被检查的元素
+     * @return 数组中指定元素所在位置，未找到返回{@link #INDEX_NOT_FOUND}
+     * @since 3.0.7
+     */
+    public static <T> int lastIndexOf(T[] array, Object value) {
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (ObjectUtil.equal(value, array[i])) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
 
 }
