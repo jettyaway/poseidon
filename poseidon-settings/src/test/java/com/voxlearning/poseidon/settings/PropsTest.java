@@ -16,6 +16,7 @@ public class PropsTest {
     @Test
     public void testRead() {
         Props props = new Props("test.properties");
+        props = props.autoLoad();
         String user = props.getProperty("user");
         Assert.assertEquals(user, "root");
         int passwd = props.getInt("pass").orElse(123);
@@ -27,6 +28,9 @@ public class PropsTest {
 
         String driver = props.getProperty("driver");
         Assert.assertEquals(driver, "com.mysql.jdbc.Driver");
+        while (true) {
+
+        }
     }
 
 
