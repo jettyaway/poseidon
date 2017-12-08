@@ -1,15 +1,22 @@
 package com.voxlearning.poseidon.core.io;
 
+import com.voxlearning.poseidon.core.exceptions.IORuntimeException;
+import com.voxlearning.poseidon.core.file.FileWriter;
 import com.voxlearning.poseidon.core.io.resources.ResourcesUtil;
+import com.voxlearning.poseidon.core.lang.Preconditions;
 import com.voxlearning.poseidon.core.util.ClassUtil;
 import com.voxlearning.poseidon.core.util.CollectionUtil;
 import com.voxlearning.poseidon.core.util.StrUtil;
 import com.voxlearning.poseidon.core.util.URLUtil;
 
+import java.io.BufferedWriter;
 import java.io.File;
+
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -110,6 +117,12 @@ public class FileUtil {
     }
 
 
+    /**
+     * 是否为绝对路径
+     *
+     * @param path 路径
+     * @return true:是 false:否
+     */
     public static boolean isAbsolutePath(String path) {
         if (StrUtil.isEmpty(path)) {
             return false;
@@ -132,18 +145,38 @@ public class FileUtil {
         return new File(getAbsolutePath(path));
     }
 
+    public static File file(File parent, String child) {
+        if (StrUtil.isBlank(child)) {
+            throw new NullPointerException("File path is null.");
+        }
+        return new File(parent, child);
+    }
+
+    public static File file(String parent, String child) {
+        if (StrUtil.isBlank(child)) {
+            throw new NullPointerException("File path is null.");
+        }
+        return new File(parent, child);
+    }
+
     /**
      * 获取绝对路径，相对于ClassPath的目录<br>
      * 如果给定就是绝对路径，则返回原路径，原路径把所有\替换为/<br>
      * 兼容Spring风格的路径表示，例如：classpath:config/example.setting也会被识别后转换
      *
      * @param path
-     * @return
+     * @return 绝对路径
      */
     public static String getAbsolutePath(String path) {
         return getAbsolutePath(path, null);
     }
 
+    /**
+     * 获取标准的绝对路径
+     *
+     * @param file 文件对象
+     * @return 绝对路径
+     */
     public static String getAbsolutePath(File file) {
         if (Objects.isNull(file)) {
             return null;
@@ -162,7 +195,7 @@ public class FileUtil {
      *
      * @param path  　相对路径
      * @param clazz 　相对路径相对的类
-     * @return
+     * @return 转化后的路径
      */
     public static String getAbsolutePath(String path, Class<?> clazz) {
         if (Objects.isNull(path)) {
@@ -240,7 +273,7 @@ public class FileUtil {
                 //去除类似于/C:这类路径开头的斜杠
                 prefix = prefix.substring(1);
             }
-            if (false == prefix.contains("/")) {
+            if (!prefix.contains("/")) {
                 pathToUse = pathToUse.substring(prefixIndex + 1);
             } else {
                 //如果前缀中包含/,说明非Windows风格path
@@ -274,5 +307,129 @@ public class FileUtil {
             }
         }
         return prefix + CollectionUtil.join(pathElements, StrUtil.SLASH);
+    }
+
+    /**
+     * 可读文件大小
+     *
+     * @param size 类型大小
+     * @return 大小
+     */
+    public static String readableFileSize(long size) {
+        if (size < 0) {
+            return "0";
+        }
+        String[] unit = new String[]{"B", "KB", "MB", "GB", "TB", "EB"};
+        int digit = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.##").format(size / Math.pow(1024, digit)) + " " + unit[digit];
+    }
+
+    /**
+     * 创建文件,不存在时新建
+     *
+     * @param file 文件
+     * @return 文件
+     */
+    public static File touch(File file) {
+        Preconditions.checkNotNull(file);
+        if (file.exists()) {
+            return file;
+        }
+        mkdirParentDirs(file);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
+        return file;
+    }
+
+    public static File touch(String filePath) {
+        if (StrUtil.isBlank(filePath)) {
+            return null;
+        }
+        File file = file(filePath);
+        return touch(file);
+    }
+
+    public static File touch(File parent, String child) {
+        return touch(file(parent, child));
+    }
+
+    public static File touch(String parent, String child) {
+        return touch(file(parent, child));
+    }
+
+
+    /**
+     * 创建父目录
+     *
+     * @param file 文件
+     * @return 文件
+     */
+    public static File mkdirParentDirs(File file) {
+        File parentFile = file.getParentFile();
+        if (parentFile != null || !parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        return parentFile;
+    }
+
+    /**
+     * 创建父目录
+     *
+     * @param filePath 文件
+     * @return 文件
+     */
+    public static File mkdirParentDirs(String filePath) {
+        if (StrUtil.isBlank(filePath)) {
+            return null;
+        }
+        return mkdirParentDirs(file(filePath));
+    }
+
+    /**
+     * 创建目录
+     *
+     * @param file 目录
+     * @return 创建的目录
+     */
+    public static File mkdirs(File file) {
+        if (Objects.isNull(file)) {
+            return null;
+        }
+        if (file.exists()) {
+            return file;
+        }
+        file.mkdirs();
+        return file;
+    }
+
+    public static File mkdirs(String filePath) {
+        if (StrUtil.isBlank(filePath)) {
+            return null;
+        }
+        return mkdirs(file(filePath));
+    }
+
+    /**
+     * 获取bufferedWriter
+     *
+     * @param file    文件
+     * @param charset 编码
+     * @param append  是否追加
+     * @return {@link BufferedWriter}
+     */
+    public static BufferedWriter getWriter(File file, Charset charset, boolean append) {
+        return FileWriter.create(file, charset).getWriter(append);
+    }
+
+    public static BufferedWriter getWrite(String filePath, Charset charset, boolean append) {
+        return getWriter(touch(filePath), charset, append);
+    }
+
+    public static void main(String[] args) {
+        File file = new File("/home/suhao/Desktop", "8080");
+        System.out.println(file.getPath());
     }
 }
