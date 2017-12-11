@@ -74,4 +74,9 @@ public abstract class OptNullBasicTypeFromObjectGetter<K> extends OptNullBasicTy
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, K key, E defaultValue) {
         return Optional.ofNullable(Convert.toEnum(clazz, getObj(key), defaultValue));
     }
+
+    @Override
+    public Optional<Character> getChar(K key, Character defaultValue) {
+        return Optional.ofNullable(Convert.toChar(getObj(key), defaultValue));
+    }
 }

@@ -53,6 +53,10 @@ public class SettingLoader {
         this.isUseVariable = isUseVariable;
     }
 
+    public void setRegVar(String regVar) {
+        this.regVar = regVar;
+    }
+
     public boolean load(URLResource resource) {
         if (Objects.isNull(resource)) {
             throw new NullPointerException("resource can not ben null or empty");

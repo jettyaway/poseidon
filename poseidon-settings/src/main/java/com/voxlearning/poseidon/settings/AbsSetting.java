@@ -9,9 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * Setting 抽象类
+ *
  * @author <a href="mailto:hao.su@17zuoye.com">hao.su</a>
  * @version 2017-12-07
  * @since 17-12-7
@@ -24,6 +27,14 @@ public abstract class AbsSetting extends OptNullBasicTypeFromObjectGetter<String
 
     public static final String ARRAY_DEFAULT_DELIMITER = ",";
 
+    /**
+     * 子类实现,提供键对应的值
+     *
+     * @param key          键
+     * @param defaultValue 默认值
+     * @return Optional object value
+     * @see Optional
+     */
     @Override
     public abstract Optional<Object> getObj(String key, Object defaultValue);
 
@@ -100,7 +111,11 @@ public abstract class AbsSetting extends OptNullBasicTypeFromObjectGetter<String
     }
 
     public Character getChar(String key, String group, Character defaultValue) {
-        return Convert.toChar(getByGroup(key, group), defaultValue);
+        String value = getByGroup(key, group);
+        if (StrUtil.isBlank(value)) {
+            return defaultValue;
+        }
+        return value.charAt(0);
     }
 
     public Character getChar(String key, String group) {
@@ -136,12 +151,17 @@ public abstract class AbsSetting extends OptNullBasicTypeFromObjectGetter<String
         return BeanUtil.fillBean(bean, new BeanUtil.ValueProvider<String>() {
             @Override
             public Object value(String key, Type valueType) {
-                return null;
+                String value = getByGroup(key, group);
+                if (Objects.nonNull(value)) {
+                    logger.debug("Parse setting to object field [%s=%s]", key, value);
+                }
+                return value;
+
             }
 
             @Override
             public boolean containsKey(String key) {
-                return false;
+                return Objects.nonNull(getByGroup(key, group));
             }
         }, BeanUtil.CopyOptions.create());
     }
