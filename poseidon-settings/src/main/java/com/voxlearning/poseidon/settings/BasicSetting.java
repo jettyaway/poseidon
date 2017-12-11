@@ -116,7 +116,7 @@ public class BasicSetting extends AbsSetting implements Map<Object, Object> {
                 public void onModify(WatchEvent<?> event, Path currentPath) {
                     load();
                 }
-            });
+            }).start();
         } else {
             IOUtil.close(this.watcherMonitor);
             this.watcherMonitor = null;
