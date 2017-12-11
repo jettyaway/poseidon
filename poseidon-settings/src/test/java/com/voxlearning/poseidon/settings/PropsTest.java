@@ -16,7 +16,6 @@ public class PropsTest {
     @Test
     public void testRead() {
         Props props = new Props("test.properties");
-        props = props.autoLoad();
         String user = props.getProperty("user");
         Assert.assertEquals(user, "root");
         int passwd = props.getInt("pass").orElse(123);
@@ -28,12 +27,10 @@ public class PropsTest {
 
         String driver = props.getProperty("driver");
         Assert.assertEquals(driver, "com.mysql.jdbc.Driver");
-        while (true) {
-
-        }
     }
 
 
+    @Test
     public void testAbsPath() {
         Props props = new Props("/home/suhao/gitproject/poseidon/poseidon-settings/src/test/resources/test.properties");
         String user = props.getProperty("user");
@@ -43,5 +40,19 @@ public class PropsTest {
 
         String driver = props.getProperty("driver");
         Assert.assertEquals(driver, "com.mysql.jdbc.Driver");
+    }
+
+    @Test
+    public void testAutoLoad() {
+        Props propertiesAutoReload = Props.getPropertiesAutoReload("test.properties");
+        String user = propertiesAutoReload.getProperty("user");
+        Assert.assertEquals(user, "root");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String test = propertiesAutoReload.getProperty("test1");
+        Assert.assertEquals(test, "test");
     }
 }

@@ -3,6 +3,7 @@ package com.voxlearning.poseidon.settings.dialect;
 import com.voxlearning.poseidon.core.convert.Convert;
 import com.voxlearning.poseidon.core.getter.BasicTypeGetter;
 import com.voxlearning.poseidon.core.getter.OptBasicTypeGetter;
+import com.voxlearning.poseidon.core.io.IOUtil;
 import com.voxlearning.poseidon.core.io.resources.*;
 import com.voxlearning.poseidon.core.io.watch.SimpleWatcher;
 import com.voxlearning.poseidon.core.io.watch.WatcherMonitor;
@@ -55,15 +56,15 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
     }
 
     public static Props getPropertiesAutoReload(String path) {
-        return new Props(path).autoLoad();
+        return new Props(path).autoLoad(true);
     }
 
     public static Props getPropertiesAutoReload(String path, String charsetName) {
-        return new Props(path, charsetName).autoLoad();
+        return new Props(path, charsetName).autoLoad(true);
     }
 
     public static Props getPropertiesAutoReload(String path, Charset charset) {
-        return new Props(path, charset).autoLoad();
+        return new Props(path, charset).autoLoad(true);
     }
 
 
@@ -166,7 +167,10 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
     /**
      * 自动加载
      */
-    public Props autoLoad() {
+    public Props autoLoad(boolean autoLoad) {
+        if (!autoLoad) {
+            IOUtil.close(this.watcherMonitor);
+        }
         if (Objects.nonNull(this.watcherMonitor)) {
             this.watcherMonitor.close();
         }
@@ -178,6 +182,7 @@ public final class Props extends Properties implements BasicTypeGetter<String>, 
                 load();
             }
         });
+        watcherMonitor.start();
         return this;
     }
 
