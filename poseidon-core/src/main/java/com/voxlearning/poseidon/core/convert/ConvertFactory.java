@@ -3,6 +3,7 @@ package com.voxlearning.poseidon.core.convert;
 
 import com.voxlearning.poseidon.core.convert.converter.NumberConverter;
 import com.voxlearning.poseidon.core.convert.converter.PrimitiveConverter;
+import com.voxlearning.poseidon.core.convert.converter.StringConvert;
 import com.voxlearning.poseidon.core.util.ArrayUtil;
 import com.voxlearning.poseidon.core.util.ReflectUtil;
 
@@ -163,6 +164,10 @@ public class ConvertFactory {
         defaultConvertMap.put(AtomicLong.class, new NumberConverter(AtomicLong.class));
         defaultConvertMap.put(BigInteger.class, new NumberConverter(BigInteger.class));
         defaultConvertMap.put(BigDecimal.class, new NumberConverter(BigDecimal.class));
+
+
+        defaultConvertMap.put(String.class, new StringConvert());
+
     }
 
 

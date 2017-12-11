@@ -20,63 +20,64 @@ public abstract class OptNullBasicTypeFromObjectGetter<K> extends OptNullBasicTy
     @Override
     public abstract Optional<Object> getObj(K key, Object defaultValue);
 
+
     @Override
     public Optional<String> getStr(K key, String defaultValue) {
-        return Optional.ofNullable(Convert.toStr(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toStr(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Short> getShort(K key, Short defaultValue) {
-        return Optional.ofNullable(Convert.toShort(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toShort(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Byte> getByte(K key, Byte defaultValue) {
-        return Optional.ofNullable(Convert.toByte(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toByte(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Boolean> getBoolean(K key, Boolean defaultValue) {
-        return Optional.ofNullable(Convert.toBoolean(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toBoolean(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Integer> getInt(K key, Integer defaultValue) {
-        return Optional.ofNullable(Convert.toInt(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toInt(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Float> getFloat(K key, Float defaultValue) {
-        return Optional.ofNullable(Convert.toFloat(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toFloat(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Long> getLong(K key, Long defaultValue) {
-        return Optional.ofNullable(Convert.toLong(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toLong(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Double> getDouble(K key, Double defaultValue) {
-        return Optional.ofNullable(Convert.toDouble(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toDouble(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<BigInteger> getBigInteger(K key, BigInteger defaultValue) {
-        return Optional.ofNullable(Convert.toBigInteger(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toBigInteger(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<BigDecimal> getBigDecimal(K key, BigDecimal defaultValue) {
-        return Optional.ofNullable(Convert.toBigDecimal(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toBigDecimal(getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public <E extends Enum<E>> Optional<E> getEnum(Class<E> clazz, K key, E defaultValue) {
-        return Optional.ofNullable(Convert.toEnum(clazz, getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toEnum(clazz, getObj(key).orElse(null), defaultValue));
     }
 
     @Override
     public Optional<Character> getChar(K key, Character defaultValue) {
-        return Optional.ofNullable(Convert.toChar(getObj(key), defaultValue));
+        return Optional.ofNullable(Convert.toChar(getObj(key).orElse(null), defaultValue));
     }
 }

@@ -94,9 +94,10 @@ public class BasicSetting extends AbsSetting implements Map<Object, Object> {
     }
 
     public synchronized boolean load() {
-        if (Objects.nonNull(this.settingLoader)) {
+        if (Objects.isNull(this.settingLoader)) {
             settingLoader = new SettingLoader(this, this.charset, this.isUseVariable);
         }
+        settingLoader.load(new URLResource(this.settingUrl));
         return true;
     }
 
@@ -274,12 +275,12 @@ public class BasicSetting extends AbsSetting implements Map<Object, Object> {
 
     @Override
     public boolean containsKey(Object key) {
-        return containsKey(key);
+        return this.map.containsKey(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return containsValue(value);
+        return this.map.containsValue(value);
     }
 
     @Override
@@ -289,7 +290,7 @@ public class BasicSetting extends AbsSetting implements Map<Object, Object> {
 
     @Override
     public Object put(Object key, Object value) {
-        return this.put(key, value);
+        return this.map.put(key, value);
     }
 
     @Override

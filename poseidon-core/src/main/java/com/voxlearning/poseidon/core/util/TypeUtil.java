@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 public class TypeUtil {
 
+
     /**
      * 获取指定类型的泛型参数
      *
@@ -28,6 +29,14 @@ public class TypeUtil {
             return typeArguments[index];
         }
         return null;
+    }
+
+    public static Type getTypeArgument(Class<?> clazz, int index) {
+        Type type = clazz;
+        if (!(type instanceof ParameterizedType)) {
+            type = clazz.getGenericSuperclass();
+        }
+        return getTypeArgument(type, index);
     }
 
     /**

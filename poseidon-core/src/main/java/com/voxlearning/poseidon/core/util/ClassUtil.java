@@ -147,6 +147,8 @@ public class ClassUtil {
         return getTypeArgument(clazz, 0);
     }
 
+
+
     /**
      * 获得执行类型的指定位置的泛型参数类型
      *
