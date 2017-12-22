@@ -36,4 +36,9 @@ public class SettingTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testToBean() {
+        //TODO 添加测试setting toBean
+    }
 }
