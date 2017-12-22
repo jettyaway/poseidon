@@ -13,6 +13,7 @@
         <module>poseidon-core</module>
         <module>poseidon-storage</module>
         <module>poseidon-settings</module>
+        <module>poseidon-cache</module>
     </modules>
 
     <repositories>
@@ -29,6 +30,8 @@
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
+        <com.aerospike.client.version>3.3.0</com.aerospike.client.version>
+        <jedis.version>2.8.2</jedis.version>
     </properties>
 
 
