@@ -16,6 +16,8 @@ import java.util.Set;
  */
 public class JedisClusterConnectionImpl implements IJedisConnection {
 
+    private static final String SEPARATOR = ":";
+
     @Override
     public JedisCluster getCluster(RedisClusterConfig redisConfig) {
         List<String> hosts = redisConfig.getHosts();
@@ -23,10 +25,10 @@ public class JedisClusterConnectionImpl implements IJedisConnection {
         int timeout = redisConfig.getTimeout();
         Set<HostAndPort> hostAndPorts = new HashSet<>();
         for (String host : hosts) {
-            if (!host.contains(RedisClusterConfig.SEPARATOR)) {
+            if (!host.contains(SEPARATOR)) {
                 throw new JedisClusterException("Host and port must separator with[:]");
             }
-            String[] split = host.split(RedisClusterConfig.SEPARATOR);
+            String[] split = host.split(SEPARATOR);
             if (split.length < 2) {
                 throw new JedisClusterException("Host [%s] is error format", host);
             }

@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class RedisClusterConfig {
 
-    public static final String SEPARATOR = ":";
 
     private String name;
     private List<String> hosts;

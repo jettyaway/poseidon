@@ -3,8 +3,12 @@ package com.voxlearning.poseidon.redis.cluster.builder;
 
 import com.voxlearning.poseidon.core.concurrent.ReentrantLocker;
 import com.voxlearning.poseidon.core.util.StrUtil;
+import com.voxlearning.poseidon.redis.cluster.IJedisConnection;
+import com.voxlearning.poseidon.redis.cluster.JedisClusterConnectionImpl;
 import com.voxlearning.poseidon.redis.cluster.model.RedisClusterConfig;
 import com.voxlearning.poseidon.settings.Setting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.HashMap;
@@ -21,9 +25,14 @@ import java.util.Objects;
  */
 public class JedisClusterBuilderImpl extends ReentrantLocker implements IJedisBuilder {
 
+    private Logger logger = LoggerFactory.getLogger(JedisClusterBuilderImpl.class);
+
     private static JedisClusterBuilderImpl INSTANCE = null;
 
-    private static final Map<RedisClusterConfig, JedisCluster> buffer = new HashMap<>();
+    private static final Map<String, JedisCluster> buffer = new HashMap<>();
+    private static final Map<String, RedisClusterConfig> holders = new HashMap<>();
+
+    private static IJedisConnection jedisConnection = new JedisClusterConnectionImpl();
 
     /***
      * 默认配置文件名称
@@ -36,7 +45,9 @@ public class JedisClusterBuilderImpl extends ReentrantLocker implements IJedisBu
      * @param settingName 配置文件名称
      */
     private JedisClusterBuilderImpl(String settingName) {
-        this.settingName = settingName;
+        if (StrUtil.isNotBlank(settingName)) {
+            this.settingName = settingName;
+        }
         init(settingName);
     }
 
@@ -59,5 +70,29 @@ public class JedisClusterBuilderImpl extends ReentrantLocker implements IJedisBu
         settingName = StrUtil.defaultString(settingName, this.settingName);
         Setting setting = new Setting(settingName);
         List<String> groups = setting.getGroups();
+        if (Objects.isNull(groups)) {
+            return;
+        }
+        for (String group : groups) {
+            holders.put(group, (RedisClusterConfig) setting.toBean(group, new RedisClusterConfig()));
+        }
+        if (holders.isEmpty()) {
+            logger.warn("your import cache redis module but not hava default redis setting file.");
+            return;
+        }
+        holders.keySet().forEach(this::getCluster);
+    }
+
+    @Override
+    public JedisCluster getCluster(String groupName) {
+        return doInLock(() -> {
+            if (buffer.containsKey(groupName)) {
+                return buffer.get(groupName);
+            }
+            RedisClusterConfig config = holders.get(groupName);
+            JedisCluster cluster = jedisConnection.getCluster(config);
+            buffer.put(groupName, cluster);
+            return cluster;
+        });
     }
 }

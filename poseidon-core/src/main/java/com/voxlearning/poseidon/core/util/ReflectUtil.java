@@ -156,7 +156,7 @@ public class ReflectUtil {
             } else {
                 allField = ArrayUtil.append(allField, declaredFields);
             }
-            superClazz = superClass ? clazz.getSuperclass() : null;
+            superClazz = superClass ? superClazz.getSuperclass() : null;
         }
         return allField;
     }
