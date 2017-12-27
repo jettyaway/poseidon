@@ -22,6 +22,7 @@ public class TestConnection {
 
     @Test
     public void testConnection() {
+        //TODO complete the test
         JedisCluster cluster = jedisClusterBuilder.getCluster("redis-test");
         Assert.assertNotNull(cluster);
     }
