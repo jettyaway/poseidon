@@ -63,10 +63,10 @@ public abstract class AbstractProducer implements IProducer {
     }
 
     @Override
-    public void send(String topic, List<String> messages) {
+    public void send(String topic, List<String> messages,Callback callback) {
         List<byte[]> collect = messages.parallelStream().map(message -> message.getBytes(CharsetUtil.CHARSET_UTF_8))
                 .collect(Collectors.toList());
-        sendBytes(topic, collect);
+        sendBytes(topic, collect,callback);
     }
 
     @Override

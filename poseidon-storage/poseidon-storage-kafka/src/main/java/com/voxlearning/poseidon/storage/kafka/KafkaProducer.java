@@ -3,11 +3,9 @@ package com.voxlearning.poseidon.storage.kafka;
 import com.voxlearning.poseidon.settings.dialect.Props;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -34,35 +32,17 @@ public class KafkaProducer extends AbstractProducer {
     @Override
     public void doSend(String topic, List<byte[]> messages, Callback callback) {
         ProducerRecord<String, byte[]> record;
-        long startTime = System.currentTimeMillis();
-        callback = (callback == null) ? new SinkCallback(startTime) : callback;
         for (byte[] message : messages) {
             record = new ProducerRecord<>(topic, null,
                     message);
-            kafkaFutures.add(producer.send(record, callback));
+            if (Objects.isNull(callback)) {
+                kafkaFutures.add(producer.send(record));
+            } else {
+                kafkaFutures.add(producer.send(record, callback));
+            }
         }
         producer.flush();
     }
 }
 
-class SinkCallback implements Callback {
-    private static final Logger logger = LoggerFactory.getLogger(SinkCallback.class);
-    private long startTime;
 
-    public SinkCallback(long startTime) {
-        this.startTime = startTime;
-    }
-
-    @Override
-    public void onCompletion(RecordMetadata metadata, Exception exception) {
-        if (exception != null) {
-            logger.debug("Error sending message to Kafka {} ", exception.getMessage());
-        }
-
-        if (logger.isDebugEnabled()) {
-            long eventElapsedTime = System.currentTimeMillis() - startTime;
-            logger.debug("Acked message partition:{} ofset:{}", metadata.partition(), metadata.offset());
-            logger.debug("Elapsed time for send: {}", eventElapsedTime);
-        }
-    }
-}

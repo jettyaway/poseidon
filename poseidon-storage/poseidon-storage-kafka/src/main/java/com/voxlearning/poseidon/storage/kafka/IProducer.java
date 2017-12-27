@@ -16,7 +16,7 @@ public interface IProducer {
     void stop();
 
 
-    void send(String topic, List<String> message);
+    void send(String topic, List<String> message, Callback callback);
 
     void sendBytes(String topic, List<byte[]> message);
 
