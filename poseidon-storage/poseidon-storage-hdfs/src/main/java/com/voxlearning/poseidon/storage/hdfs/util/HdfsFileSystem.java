@@ -1,10 +1,6 @@
 package com.voxlearning.poseidon.storage.hdfs.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +11,7 @@ import java.util.stream.Stream;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.voxlearning.poseidon.core.util.StrUtil;
+import com.voxlearning.poseidon.storage.hdfs.exception.HdfsRuntimeException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -24,10 +21,16 @@ import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.log4j.Logger;
 
+
+/**
+ * HDFS 工具类
+ *
+ * @author hao.su
+ * @date 2017-12-29
+ */
 public class HdfsFileSystem {
 
     private static Logger logger = Logger.getLogger(HdfsFileSystem.class);
-
 
     /**
      * 按路径上传文件到hdfs
@@ -120,8 +123,22 @@ public class HdfsFileSystem {
      * @throws IOException
      */
     public static void write(InputStream inputStream, FSDataOutputStream outputStream) throws IOException {
-        IOUtils.copyBytes(inputStream, outputStream, 4096, false);
-        outputStream.hsync();
+        IOUtils.copyBytes(inputStream, outputStream, 2048, false);
+        //outputStream.hsync();
+    }
+
+    /**
+     * 文件中写
+     * 不关闭流
+     * @param bytes
+     * @param outputStream
+     * @throws IOException
+     */
+    public static void write(byte[] bytes, FSDataOutputStream outputStream) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
+            IOUtils.copyBytes(inputStream, outputStream, 2048, false);
+        }
+        //outputStream.hsync();
     }
 
     /**
@@ -156,18 +173,8 @@ public class HdfsFileSystem {
      * @param path hdfs路径
      * @return true or false
      */
-    public static boolean exist(String path) {
-        FileSystem fileSystem;
-        boolean exist;
-        try {
-            Path fsPath = new Path(path);
-            fileSystem = getFileSystem(fsPath);
-            exist = fileSystem.exists(fsPath);
-        } catch (IOException e) {
-            logger.error(e);
-            return false;
-        }
-        return exist;
+    public static boolean exist(String path, FileSystem fileSystem) throws IOException {
+        return fileSystem.exists(new Path(path));
     }
 
 
@@ -177,10 +184,9 @@ public class HdfsFileSystem {
      * @param dir hdfs路径
      * @return List<String>
      */
-    public static List<String> listFiles(String dir) {
-        FileSystem fileSystem;
+    public static List<String> listFiles(String dir, FileSystem fileSystem) throws IOException {
         List<String> pathList = null;
-        if (!exist(dir)) {
+        if (!exist(dir, fileSystem)) {
             return null;
         }
         try {
@@ -202,9 +208,9 @@ public class HdfsFileSystem {
      * @param filePath    文件路径
      * @throws IOException 异常
      */
-    public static void createFileCorver(InputStream inputStream, String filePath) throws IOException {
+    public static void createFileCorver(InputStream inputStream, String filePath, FileSystem fileSystem) throws IOException {
         Preconditions.checkArgument(Objects.nonNull(inputStream) && !Strings.isNullOrEmpty(filePath));
-        if (exist(filePath) && isFile(filePath)) {
+        if (exist(filePath, fileSystem) && isFile(filePath, fileSystem)) {
             deleteFile(filePath);
         }
         createFile(inputStream, filePath);
@@ -216,18 +222,33 @@ public class HdfsFileSystem {
         return path.getFileSystem(conf);
     }
 
-    public static boolean isFile(String path) {
+    public static FSDataOutputStream getFSDataOutputStream(String filePath, FileSystem fileSystem) throws IOException {
+        Preconditions.checkArgument(StrUtil.isNotBlank(filePath));
+        return fileSystem.create(new Path(filePath));
+    }
+
+    public static boolean isFile(String path, FileSystem fileSystem) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(path));
-        FileSystem fileSystem;
         boolean isFile;
         try {
             Path fsPath = new Path(path);
-            fileSystem = getFileSystem(fsPath);
             isFile = fileSystem.isFile(fsPath);
         } catch (IOException e) {
             logger.error(e);
             return false;
         }
         return isFile;
+    }
+
+    public static void rename(String sourcePath, String targetPath, final FileSystem fs) throws IOException {
+        if (Objects.equals(sourcePath, targetPath)) {
+            return;
+        }
+        if (Objects.isNull(fs)) {
+            throw new HdfsRuntimeException("fs cant not be null.");
+        }
+        final Path srcPath = new Path(sourcePath);
+        final Path dstPath = new Path(targetPath);
+        fs.rename(srcPath, dstPath);
     }
 }

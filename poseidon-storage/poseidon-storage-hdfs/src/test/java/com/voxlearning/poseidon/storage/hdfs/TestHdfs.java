@@ -50,6 +50,13 @@ public class TestHdfs {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        while(true){
+            try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Test
